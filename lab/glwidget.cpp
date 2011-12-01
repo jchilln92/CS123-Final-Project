@@ -90,7 +90,7 @@ void GLWidget::initializeResources()
     // by the video card.  But that's a pain to do so we're not going to.
     cout << "--- Loading Resources ---" << endl;
 
-    m_dragon = ResourceLoader::loadObjModel("../lab09/models/xyzrgb_dragon.obj");
+    m_dragon = ResourceLoader::loadObjModel("../CS123-Final-Project/models/xyzrgb_dragon.obj");
     cout << "Loaded dragon..." << endl;
 
     m_skybox = ResourceLoader::loadSkybox();
@@ -114,12 +114,12 @@ void GLWidget::initializeResources()
 void GLWidget::loadCubeMap()
 {
     QList<QFile *> fileList;
-    fileList.append(new QFile("../lab09/textures/astra/posx.jpg"));
-    fileList.append(new QFile("../lab09/textures/astra/negx.jpg"));
-    fileList.append(new QFile("../lab09/textures/astra/posy.jpg"));
-    fileList.append(new QFile("../lab09/textures/astra/negy.jpg"));
-    fileList.append(new QFile("../lab09/textures/astra/posz.jpg"));
-    fileList.append(new QFile("../lab09/textures/astra/negz.jpg"));
+    fileList.append(new QFile("../CS123-Final-Project/textures/astra/posx.jpg"));
+    fileList.append(new QFile("../CS123-Final-Project/textures/astra/negx.jpg"));
+    fileList.append(new QFile("../CS123-Final-Project/textures/astra/posy.jpg"));
+    fileList.append(new QFile("../CS123-Final-Project/textures/astra/negy.jpg"));
+    fileList.append(new QFile("../CS123-Final-Project/textures/astra/posz.jpg"));
+    fileList.append(new QFile("../CS123-Final-Project/textures/astra/negz.jpg"));
     m_cubeMap = ResourceLoader::loadCubeMap(fileList);
 }
 
@@ -129,12 +129,12 @@ void GLWidget::loadCubeMap()
 void GLWidget::createShaderPrograms()
 {
     const QGLContext *ctx = context();
-    m_shaderPrograms["reflect"] = ResourceLoader::newShaderProgram(ctx, "../lab09/shaders/reflect.vert",
-                                                                   "../lab09/shaders/reflect.frag");
-    m_shaderPrograms["refract"] = ResourceLoader::newShaderProgram(ctx, "../lab09/shaders/refract.vert",
-                                                                   "../lab09/shaders/refract.frag");
-    m_shaderPrograms["brightpass"] = ResourceLoader::newFragShaderProgram(ctx, "../lab09/shaders/brightpass.frag");
-    m_shaderPrograms["blur"] = ResourceLoader::newFragShaderProgram(ctx, "../lab09/shaders/blur.frag");
+    m_shaderPrograms["reflect"] = ResourceLoader::newShaderProgram(ctx, "../CS123-Final-Project/shaders/reflect.vert",
+                                                                   "../CS123-Final-Project/shaders/reflect.frag");
+    m_shaderPrograms["refract"] = ResourceLoader::newShaderProgram(ctx, "../CS123-Final-Project/shaders/refract.vert",
+                                                                   "../CS123-Final-Project/shaders/refract.frag");
+    m_shaderPrograms["brightpass"] = ResourceLoader::newFragShaderProgram(ctx, "../CS123-Final-Project/shaders/brightpass.frag");
+    m_shaderPrograms["blur"] = ResourceLoader::newFragShaderProgram(ctx, "../CS123-Final-Project/shaders/blur.frag");
 }
 
 /**
