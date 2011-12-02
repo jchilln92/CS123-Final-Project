@@ -19,7 +19,11 @@ HEADERS += lab/glwidget.h \
     support/resourceloader.h \
     support/mainwindow.h \
     support/camera.h \
-    lib/targa.h
+    lib/targa.h \
+    geom/Sphere.h \
+    geom/Shape.h \
+    geom/MeshDetail.h \
+    geom/Planet.h
 
 SOURCES += \
     lab/glwidget.cpp \
@@ -28,7 +32,10 @@ SOURCES += \
     support/resourceloader.cpp \
     support/mainwindow.cpp \
     support/main.cpp \
-    support/camera.cpp
+    support/camera.cpp \
+    geom/Sphere.cpp \
+    geom/Shape.cpp \
+    geom/Planet.cpp
 
 FORMS += mainwindow.ui \
     support/mainwindow.ui

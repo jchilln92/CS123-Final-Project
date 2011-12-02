@@ -10,6 +10,8 @@
 #include <QWheelEvent>
 #include "glm.h"
 
+#include "geom/Planet.h"
+
 using std::cout;
 using std::endl;
 
@@ -50,7 +52,8 @@ GLWidget::~GLWidget()
         delete fbo;
     glDeleteLists(m_skybox, 1);
     const_cast<QGLContext *>(context())->deleteTexture(m_cubeMap);
-    glmDelete(m_dragon.model);
+
+    delete m_planet;
 }
 
 /**
@@ -67,8 +70,16 @@ void GLWidget::initializeGL()
 
     glDisable(GL_DITHER);
 
-    glDisable(GL_LIGHTING);
-    glShadeModel(GL_FLAT);
+    // set up a basic light
+    /*GLfloat light_position[] = {1.0, 1.0, 1.0, 0.0};
+    glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+    glEnable(GL_LIGHT0);*/
+
+    glEnable(GL_LIGHTING);
+    glShadeModel(GL_SMOOTH);
+
+    //glDisable(GL_LIGHTING);
+    //glShadeModel(GL_FLAT);
 
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
@@ -90,11 +101,11 @@ void GLWidget::initializeResources()
     // by the video card.  But that's a pain to do so we're not going to.
     cout << "--- Loading Resources ---" << endl;
 
-    m_dragon = ResourceLoader::loadObjModel("../CS123-Final-Project/models/xyzrgb_dragon.obj");
-    cout << "Loaded dragon..." << endl;
-
     m_skybox = ResourceLoader::loadSkybox();
     cout << "Loaded skybox..." << endl;
+
+    m_planet = new Planet();
+    m_planet->setDetail(LOW);
 
     loadCubeMap();
     cout << "Loaded cube map..." << endl;
@@ -114,12 +125,12 @@ void GLWidget::initializeResources()
 void GLWidget::loadCubeMap()
 {
     QList<QFile *> fileList;
-    fileList.append(new QFile("../CS123-Final-Project/textures/astra/posx.jpg"));
-    fileList.append(new QFile("../CS123-Final-Project/textures/astra/negx.jpg"));
-    fileList.append(new QFile("../CS123-Final-Project/textures/astra/posy.jpg"));
-    fileList.append(new QFile("../CS123-Final-Project/textures/astra/negy.jpg"));
-    fileList.append(new QFile("../CS123-Final-Project/textures/astra/posz.jpg"));
-    fileList.append(new QFile("../CS123-Final-Project/textures/astra/negz.jpg"));
+    fileList.append(new QFile("../CS123-Final-Project/textures/blank/posx.jpg"));
+    fileList.append(new QFile("../CS123-Final-Project/textures/blank/negx.jpg"));
+    fileList.append(new QFile("../CS123-Final-Project/textures/blank/posy.jpg"));
+    fileList.append(new QFile("../CS123-Final-Project/textures/blank/negy.jpg"));
+    fileList.append(new QFile("../CS123-Final-Project/textures/blank/posz.jpg"));
+    fileList.append(new QFile("../CS123-Final-Project/textures/blank/negz.jpg"));
     m_cubeMap = ResourceLoader::loadCubeMap(fileList);
 }
 
@@ -211,7 +222,15 @@ void GLWidget::paintGL()
     int width = this->width();
     int height = this->height();
 
-    // Render the scene to a framebuffer
+    // draw scene
+    applyPerspectiveCamera(width, height);
+    renderScene();
+    paintText();
+
+    //---------------------------------
+    // Old Framebuffer code, might be useful later
+
+    /*// Render the scene to a framebuffer
     m_framebufferObjects["fbo_0"]->bind();
     applyPerspectiveCamera(width, height);
     renderScene();
@@ -258,8 +277,7 @@ void GLWidget::paintGL()
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 
-
-    paintText();
+    paintText();*/
 }
 
 /**
@@ -273,29 +291,17 @@ void GLWidget::renderScene() {
     // Enable cube maps and draw the skybox
     glEnable(GL_TEXTURE_CUBE_MAP);
     glBindTexture(GL_TEXTURE_CUBE_MAP, m_cubeMap);
-    glCallList(m_skybox);
 
-    // Enable culling (back) faces for rendering the dragon
+    // Disable the lighting, draw the skybox, and enable the lighting
+    glDisable(GL_LIGHTING);
+    glCallList(m_skybox);
+    glEnable(GL_LIGHTING);
+
     glEnable(GL_CULL_FACE);
 
-    // Render the dragon with the refraction shader bound
-    glActiveTexture(GL_TEXTURE0);
-    m_shaderPrograms["refract"]->bind();
-    m_shaderPrograms["refract"]->setUniformValue("CubeMap", GL_TEXTURE0);
-    glPushMatrix();
-    glTranslatef(-1.25f, 0.f, 0.f);
-    glCallList(m_dragon.idx);
-    glPopMatrix();
-    m_shaderPrograms["refract"]->release();
-
-    // Render the dragon with the reflection shader bound
-    m_shaderPrograms["reflect"]->bind();
-    m_shaderPrograms["reflect"]->setUniformValue("CubeMap", GL_TEXTURE0);
-    glPushMatrix();
-    glTranslatef(1.25f,0.f,0.f);
-    glCallList(m_dragon.idx);
-    glPopMatrix();
-    m_shaderPrograms["reflect"]->release();
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    m_planet->render();
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
     // Disable culling, depth testing and cube maps
     glDisable(GL_CULL_FACE);
@@ -361,6 +367,20 @@ void GLWidget::wheelEvent(QWheelEvent *event)
     if (event->orientation() == Qt::Vertical)
     {
         m_camera.mouseWheel(event->delta());
+
+        if (m_camera.zoom < .6) m_camera.zoom = .6;
+
+        if (m_camera.zoom >= .6 && m_camera.zoom < .9) {
+            m_planet->setDetail(VERY_HIGH);
+        } else if (m_camera.zoom >= .9 && m_camera.zoom < 1.5) {
+            m_planet->setDetail(HIGH);
+        } else if (m_camera.zoom >= 1.5 && m_camera.zoom < 2.5) {
+            m_planet->setDetail(MEDIUM);
+        } else if (m_camera.zoom >= 2.5 && m_camera.zoom < 4) {
+            m_planet->setDetail(LOW);
+        } else {
+            m_planet->setDetail(VERY_LOW);
+        }
     }
 }
 
