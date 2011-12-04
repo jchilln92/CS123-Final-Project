@@ -105,4 +105,8 @@ void PerlinNoise::generate(long seed) {
             }
         }
     }
+
+    for (int i = 0; i < MAX_OCTAVES; i++) {
+        delete disp_cubes[i];
+    }
 }
