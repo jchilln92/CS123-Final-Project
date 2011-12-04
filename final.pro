@@ -19,7 +19,9 @@ HEADERS += lab/glwidget.h \
     support/resourceloader.h \
     support/mainwindow.h \
     support/camera.h \
-    lib/targa.h
+    lib/targa.h \
+    noise/NoiseGenerator.h \
+    noise/PerlinNoise.h
 
 SOURCES += \
     lab/glwidget.cpp \
@@ -28,7 +30,9 @@ SOURCES += \
     support/resourceloader.cpp \
     support/mainwindow.cpp \
     support/main.cpp \
-    support/camera.cpp
+    support/camera.cpp \
+    noise/NoiseGenerator.cpp \
+    noise/PerlinNoise.cpp
 
 FORMS += mainwindow.ui \
     support/mainwindow.ui
