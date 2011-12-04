@@ -13,7 +13,7 @@
 
 class QGLShaderProgram;
 class QGLFramebufferObject;
-
+class Planet;
 
 class GLWidget : public QGLWidget
 {
@@ -41,7 +41,6 @@ protected:
     void createBlurKernel(int radius, int width, int height, GLfloat* kernel, GLfloat* offsets);
 
     // Drawing code
-    void applyOrthogonalCamera(float width, float height);
     void applyPerspectiveCamera(float width, float height);
     void renderTexturedQuad(int width, int height, bool flip);
     void renderBlur(int width, int height);
@@ -54,12 +53,12 @@ private:
     int m_prevTime;
     float m_prevFps, m_fps;
     Vector2 m_prevMousePos;
-    OrbitCamera m_camera;
+    Camera m_camera;
 
     // Resources
     QHash<QString, QGLShaderProgram *> m_shaderPrograms; // hash map of all shader programs
     QHash<QString, QGLFramebufferObject *> m_framebufferObjects; // hash map of all framebuffer objects
-    Model m_dragon; // dragon model
+    Planet *m_planet;
     GLuint m_skybox; // skybox call list ID
     GLuint m_cubeMap; // cubeMap texture ID
     QFont m_font; // font for rendering text

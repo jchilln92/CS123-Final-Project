@@ -22,6 +22,10 @@ HEADERS += lab/glwidget.h \
     lib/targa.h \
     noise/NoiseGenerator.h \
     noise/PerlinNoise.h
+    geom/Sphere.h \
+    geom/Shape.h \
+    geom/MeshDetail.h \
+    geom/Planet.h
 
 SOURCES += \
     lab/glwidget.cpp \
@@ -33,6 +37,9 @@ SOURCES += \
     support/camera.cpp \
     noise/NoiseGenerator.cpp \
     noise/PerlinNoise.cpp
+    geom/Sphere.cpp \
+    geom/Shape.cpp \
+    geom/Planet.cpp
 
 FORMS += mainwindow.ui \
     support/mainwindow.ui
