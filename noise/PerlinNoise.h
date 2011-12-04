@@ -1,7 +1,9 @@
 #ifndef PERLINNOISE_H
 #define PERLINNOISE_H
 
-class PerlinNoise
+#include "NoiseGenerator.h"
+
+class PerlinNoise : public NoiseGenerator
 {
 public:
     PerlinNoise(float roughness, float persistence);

@@ -10,7 +10,7 @@ public:
     static void initStaticResources();
 
     Planet();
-    Planet(Vector3 center);
+    Planet(Vector3 center, float radius);
     virtual ~Planet();
 
     void setDetail(MeshDetail detail);

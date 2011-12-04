@@ -54,8 +54,8 @@ void Planet::setDetail(MeshDetail detail) {
 void Planet::render() {
     glPushMatrix();
     glTranslatef(m_center.x, m_center.y, m_center.z);
-    float scale = m_radius / .5;
-    glScalef(scale, scale, scale);
+    // float scale = m_radius / .5;
+    // glScalef(scale, scale, scale);
 
     switch (m_renderDetail) {
     case VERY_LOW:
