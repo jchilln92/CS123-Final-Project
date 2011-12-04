@@ -41,7 +41,6 @@ protected:
     void createBlurKernel(int radius, int width, int height, GLfloat* kernel, GLfloat* offsets);
 
     // Drawing code
-    void applyOrthogonalCamera(float width, float height);
     void applyPerspectiveCamera(float width, float height);
     void renderTexturedQuad(int width, int height, bool flip);
     void renderBlur(int width, int height);
@@ -54,7 +53,7 @@ private:
     int m_prevTime;
     float m_prevFps, m_fps;
     Vector2 m_prevMousePos;
-    OrbitCamera m_camera;
+    Camera m_camera;
 
     // Resources
     QHash<QString, QGLShaderProgram *> m_shaderPrograms; // hash map of all shader programs

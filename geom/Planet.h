@@ -10,10 +10,14 @@ public:
     static void initStaticResources();
 
     Planet();
+    Planet(Vector3 center);
     virtual ~Planet();
 
     void setDetail(MeshDetail detail);
     void render();
+
+    Vector3 getCenter() { return m_center; }
+    float getRadius() { return m_radius; }
 private:
     Vector3 m_center;
     float m_radius;

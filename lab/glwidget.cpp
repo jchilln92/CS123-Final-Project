@@ -32,12 +32,6 @@ GLWidget::GLWidget(QWidget *parent) : QGLWidget(parent),
     setFocusPolicy(Qt::StrongFocus);
     setMouseTracking(true);
 
-    m_camera.center = Vector3(0.f, 0.f, 0.f);
-    m_camera.up = Vector3(0.f, 1.f, 0.f);
-    m_camera.zoom = 3.5f;
-    m_camera.theta = M_PI * 1.5f, m_camera.phi = 0.2f;
-    m_camera.fovy = 60.f;
-
     connect(&m_timer, SIGNAL(timeout()), this, SLOT(update()));
 }
 
@@ -69,11 +63,6 @@ void GLWidget::initializeGL()
     glFrontFace(GL_CCW);
 
     glDisable(GL_DITHER);
-
-    // set up a basic light
-    /*GLfloat light_position[] = {1.0, 1.0, 1.0, 0.0};
-    glLightfv(GL_LIGHT0, GL_POSITION, light_position);
-    glEnable(GL_LIGHT0);*/
 
     glEnable(GL_LIGHTING);
     glShadeModel(GL_SMOOTH);
@@ -171,22 +160,6 @@ void GLWidget::createFramebufferObjects(int width, int height)
 }
 
 /**
-  Called to switch to an orthogonal OpenGL camera.
-  Useful for rending a textured quad across the whole screen.
-
-  @param width: the viewport width
-  @param height: the viewport height
-**/
-void GLWidget::applyOrthogonalCamera(float width, float height)
-{
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glOrtho(0, width, height, 0.f, -1.f, 1.f);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-}
-
-/**
   Called to switch to a perspective OpenGL camera.
 
   @param width: the viewport width
@@ -194,17 +167,15 @@ void GLWidget::applyOrthogonalCamera(float width, float height)
 **/
 void GLWidget::applyPerspectiveCamera(float width, float height)
 {
-    float ratio = ((float) width) / height;
-    Vector3 dir(-Vector3::fromAngles(m_camera.theta, m_camera.phi));
-    Vector3 eye(m_camera.center - dir * m_camera.zoom);
-
+    // set up projection matrix
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluPerspective(m_camera.fovy, ratio, 0.1f, 1000.f);
-    gluLookAt(eye.x, eye.y, eye.z, eye.x + dir.x, eye.y + dir.y, eye.z + dir.z,
-              m_camera.up.x, m_camera.up.y, m_camera.up.z);
+    gluPerspective(55, (float)width / (float)height, 0.01, 1000);
+
+    // set up modelview matrix
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
+    m_camera.multMatrix();
 }
 
 /**
@@ -343,10 +314,7 @@ void GLWidget::renderBlur(int width, int height)
 void GLWidget::mouseMoveEvent(QMouseEvent *event)
 {
     Vector2 pos(event->x(), event->y());
-    if (event->buttons() & Qt::LeftButton || event->buttons() & Qt::RightButton)
-    {
-        m_camera.mouseMove(pos - m_prevMousePos);
-    }
+    m_camera.mouseMove(pos - m_prevMousePos, event->buttons());
     m_prevMousePos = pos;
 }
 
@@ -366,20 +334,24 @@ void GLWidget::wheelEvent(QWheelEvent *event)
 {
     if (event->orientation() == Qt::Vertical)
     {
-        m_camera.mouseWheel(event->delta());
+        // compute distance between eye point and planet
+        Vector3 eye_to_planet = m_planet->getCenter() - m_camera.getEye();
+        float dist = eye_to_planet.length();
 
-        if (m_camera.zoom < .6) m_camera.zoom = .6;
+        if (dist > m_planet->getRadius() + .25 || event->delta() < 0) {
+            m_camera.mouseWheel(event->delta());
 
-        if (m_camera.zoom >= .6 && m_camera.zoom < .9) {
-            m_planet->setDetail(VERY_HIGH);
-        } else if (m_camera.zoom >= .9 && m_camera.zoom < 1.5) {
-            m_planet->setDetail(HIGH);
-        } else if (m_camera.zoom >= 1.5 && m_camera.zoom < 2.5) {
-            m_planet->setDetail(MEDIUM);
-        } else if (m_camera.zoom >= 2.5 && m_camera.zoom < 4) {
-            m_planet->setDetail(LOW);
-        } else {
-            m_planet->setDetail(VERY_LOW);
+            if (dist >= 0 && dist < .9) {
+                m_planet->setDetail(VERY_HIGH);
+            } else if (dist >= .9 && dist < 1.5) {
+                m_planet->setDetail(HIGH);
+            } else if (dist >= 1.5 && dist < 2.5) {
+                m_planet->setDetail(MEDIUM);
+            } else if (dist >= 2.5 && dist < 4) {
+                m_planet->setDetail(LOW);
+            } else {
+                m_planet->setDetail(VERY_LOW);
+            }
         }
     }
 }
@@ -487,7 +459,7 @@ void GLWidget::keyPressEvent(QKeyEvent *event)
  **/
 void GLWidget::paintText()
 {
-    glColor3f(1.f, 1.f, 1.f);
+    glColor3f(0.f, 0.f, 0.f);
 
     // Combine the previous and current framerate
     if (m_fps >= 0 && m_fps < 1000)
@@ -499,4 +471,6 @@ void GLWidget::paintText()
     // QGLWidget's renderText takes xy coordinates, a string, and a font
     renderText(10, 20, "FPS: " + QString::number((int) (m_prevFps)), m_font);
     renderText(10, 35, "S: Save screenshot", m_font);
+
+    glColor3f(1.f, 1.f, 1.f);
 }

@@ -1,11 +1,12 @@
 #include "Planet.h"
 #include "Sphere.h"
+#include <qgl.h>
 
-#define PARAM_VERY_LOW  10
-#define PARAM_LOW       25
-#define PARAM_MEDIUM    40
-#define PARAM_HIGH      75
-#define PARAM_VERY_HIGH 150
+#define PARAM_VERY_LOW  15
+#define PARAM_LOW       30
+#define PARAM_MEDIUM    60
+#define PARAM_HIGH      120
+#define PARAM_VERY_HIGH 240
 
 bool Planet::staticInitialized = false;
 Sphere* Planet::m_vl_sphere = NULL;
@@ -33,10 +34,15 @@ void Planet::initStaticResources() {
 }
 
 Planet::Planet() {
+    Planet(Vector3(0, 0, 0), .5);
+}
+
+Planet::Planet(Vector3 center, float radius) {
     initStaticResources();
 
-    // set default mesh level
-    m_renderDetail = MEDIUM;
+    m_renderDetail = MEDIUM; // set default mesh level
+    m_radius = radius;
+    m_center = center;
 }
 
 Planet::~Planet() {}
@@ -46,6 +52,11 @@ void Planet::setDetail(MeshDetail detail) {
 }
 
 void Planet::render() {
+    glPushMatrix();
+    glTranslatef(m_center.x, m_center.y, m_center.z);
+    float scale = m_radius / .5;
+    glScalef(scale, scale, scale);
+
     switch (m_renderDetail) {
     case VERY_LOW:
         m_vl_sphere->render();
@@ -63,4 +74,6 @@ void Planet::render() {
         m_vh_sphere->render();
         break;
     }
+
+    glPopMatrix();
 }
