@@ -7,6 +7,8 @@ class Sphere;
 
 class Planet {
 public:
+    static void initStaticResources();
+
     Planet();
     virtual ~Planet();
 
@@ -18,11 +20,13 @@ private:
     MeshDetail m_renderDetail;
 
     // sphere meshes at different detail levels
-    Sphere *m_vl_sphere;
-    Sphere *m_l_sphere;
-    Sphere *m_m_sphere;
-    Sphere *m_h_sphere;
-    Sphere *m_vh_sphere;
+    // these are used as the basis for every planet
+    static bool staticInitialized;
+    static Sphere *m_vl_sphere;
+    static Sphere *m_l_sphere;
+    static Sphere *m_m_sphere;
+    static Sphere *m_h_sphere;
+    static Sphere *m_vh_sphere;
 };
 
 #endif // PLANET_H

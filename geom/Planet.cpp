@@ -7,7 +7,16 @@
 #define PARAM_HIGH      75
 #define PARAM_VERY_HIGH 150
 
-Planet::Planet() {
+bool Planet::staticInitialized = false;
+Sphere* Planet::m_vl_sphere = NULL;
+Sphere* Planet::m_l_sphere = NULL;
+Sphere* Planet::m_m_sphere = NULL;
+Sphere* Planet::m_h_sphere = NULL;
+Sphere* Planet::m_vh_sphere = NULL;
+
+void Planet::initStaticResources() {
+    if (staticInitialized) return;
+
     // precalculate spheres at different mesh levels
     m_vl_sphere = new Sphere(PARAM_VERY_LOW, PARAM_VERY_LOW);
     m_vl_sphere->calculateGeometry();
@@ -20,17 +29,17 @@ Planet::Planet() {
     m_vh_sphere = new Sphere(PARAM_VERY_HIGH, PARAM_VERY_HIGH);
     m_vh_sphere->calculateGeometry();
 
+    staticInitialized = true;
+}
+
+Planet::Planet() {
+    initStaticResources();
+
     // set default mesh level
     m_renderDetail = MEDIUM;
 }
 
-Planet::~Planet() {
-    delete m_vl_sphere;
-    delete m_l_sphere;
-    delete m_m_sphere;
-    delete m_h_sphere;
-    delete m_vh_sphere;
-}
+Planet::~Planet() {}
 
 void Planet::setDetail(MeshDetail detail) {
     m_renderDetail = detail;

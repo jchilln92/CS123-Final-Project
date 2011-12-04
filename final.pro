@@ -23,7 +23,11 @@ HEADERS += lab/glwidget.h \
     geom/Sphere.h \
     geom/Shape.h \
     geom/MeshDetail.h \
-    geom/Planet.h
+    geom/Planet.h \
+    math/CS123Vector.h \
+    math/CS123Matrix.h \
+    math/CS123Algebra.h \
+    lib/CS123Common.h
 
 SOURCES += \
     lab/glwidget.cpp \
@@ -35,7 +39,10 @@ SOURCES += \
     support/camera.cpp \
     geom/Sphere.cpp \
     geom/Shape.cpp \
-    geom/Planet.cpp
+    geom/Planet.cpp \
+    math/CS123Vector.inl \
+    math/CS123Matrix.inl \
+    math/CS123Matrix.cpp
 
 FORMS += mainwindow.ui \
     support/mainwindow.ui
