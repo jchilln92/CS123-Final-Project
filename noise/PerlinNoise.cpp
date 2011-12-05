@@ -37,9 +37,9 @@ void PerlinNoise::generate(long seed) {
     float frequency;
     for (int i = 0; i < MAX_OCTAVES; i++) {
         frequency = 1/pow(2,i+2);
-        for (int x = 0; x <= 1; x += frequency) {
-            for (int y = 0; y <= 1; y += frequency) {
-                for (int z = 0; z <= 1; z += frequency) {
+        for (float x = 0; x <= 1; x += frequency) {
+            for (float y = 0; y <= 1; y += frequency) {
+                for (float z = 0; z <= 1; z += frequency) {
                     disp_cubes[i]->insert(std::pair<Vector3,Vector3>(Vector3(x,y,z),Vector3::uniform()));
                 }
             }

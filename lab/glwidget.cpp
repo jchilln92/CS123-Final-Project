@@ -11,6 +11,7 @@
 #include "glm.h"
 
 #include "geom/Planet.h"
+#include "noise/PerlinNoise.h"
 
 using std::cout;
 using std::endl;
@@ -48,6 +49,7 @@ GLWidget::~GLWidget()
     const_cast<QGLContext *>(context())->deleteTexture(m_cubeMap);
 
     delete m_planet;
+    delete noise;
 }
 
 /**
@@ -96,6 +98,8 @@ void GLWidget::initializeResources()
     m_planet = new Planet();
     m_planet->setDetail(LOW);
 
+    noise = new PerlinNoise(.5, .5);
+
     loadCubeMap();
     cout << "Loaded cube map..." << endl;
 
@@ -129,6 +133,9 @@ void GLWidget::loadCubeMap()
 void GLWidget::createShaderPrograms()
 {
     const QGLContext *ctx = context();
+    m_shaderPrograms["terrain"] = ResourceLoader::newVertShaderProgram(ctx, "../CS123-Final-Project/shaders/terrain.vert");
+
+    // old
     m_shaderPrograms["reflect"] = ResourceLoader::newShaderProgram(ctx, "../CS123-Final-Project/shaders/reflect.vert",
                                                                    "../CS123-Final-Project/shaders/reflect.frag");
     m_shaderPrograms["refract"] = ResourceLoader::newShaderProgram(ctx, "../CS123-Final-Project/shaders/refract.vert",
@@ -139,7 +146,15 @@ void GLWidget::createShaderPrograms()
 
 /**
   Allocate framebuffer objects.
+Using OpenGL Version 4.1.0 NVIDIA 270.41.19
 
+--- Loading Resources ---
+Loaded skybox...
+Loaded cube map...
+Loaded shader programs...
+Loaded framebuffer objects...
+ --- Finish Loading Resources ---
+Unrecognised OpenGL version
   @param width: the viewport width
   @param height: the viewport height
  **/
@@ -204,7 +219,8 @@ void GLWidget::paintGL()
     /*// Render the scene to a framebuffer
     m_framebufferObjects["fbo_0"]->bind();
     applyPerspectiveCamera(width, height);
-    renderScene();
+    renderScene();Using OpenGL Version 4.1.0 NVIDIA 270.41.19
+
     m_framebufferObjects["fbo_0"]->release();
 
     // Copy the rendered scene into framebuffer 1
@@ -239,7 +255,7 @@ void GLWidget::paintGL()
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
-        // Enable alpha blending and render the texture to the screen
+        // Enable alpha blending and render the texture to the screen this with your image editor, or programmatically. For the latter approach, you need a gradient function that returns a colour given a number between 0 and 1. This function is then called for every element in you Perlin noise array to obtain a colour, which you can store in a separate array, from which an image can be created.
         glEnable(GL_BLEND);
         glBlendFunc(GL_ONE, GL_ONE);
         glTranslatef(0.f, (scales[i] - 1) * -height, 0.f);
@@ -270,8 +286,10 @@ void GLWidget::renderScene() {
 
     glEnable(GL_CULL_FACE);
 
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    glPolygonMode(GL_FRONT, GL_LINE);
+    m_shaderPrograms["terrain"]->bind();
     m_planet->render();
+    m_shaderPrograms["terrain"]->release();
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
     // Disable culling, depth testing and cube maps

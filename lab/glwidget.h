@@ -10,6 +10,7 @@
 #include "camera.h"
 #include "vector.h"
 #include "resourceloader.h"
+#include "noise/PerlinNoise.h"
 
 class QGLShaderProgram;
 class QGLFramebufferObject;
@@ -48,6 +49,7 @@ protected:
     void paintText();
 
 private:
+    PerlinNoise *noise;
     QTimer m_timer;
     QTime m_clock;
     int m_prevTime;
