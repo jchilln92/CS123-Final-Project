@@ -59,5 +59,5 @@ void Camera::lookVectorRotate(const Vector2 &delta)
 
 void Camera::lookVectorTranslate(float delta)
 {
-    m_eye += getW() * (delta * -0.0025);
+    m_eye += getW() * (delta * -0.0020);
 }

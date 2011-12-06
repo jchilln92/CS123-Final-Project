@@ -1,10 +1,33 @@
 #include "resourceloader.h"
 
+#include <iostream>
 #include <QGLShaderProgram>
 #include <QList>
 #include <QString>
 #include "glm.h"
 
+GLuint ResourceLoader::loadTextureImage(const char *filename) {
+    GLuint textureID;
+    glGenTextures(1, &textureID);
+
+    // load and format image
+    QImage img;
+    bool success = img.load(filename);
+    if (!success) {
+        std::cerr << "Image file not found!" << std::endl;
+        return 0;
+    }
+
+    QImage formattedImage = QGLWidget::convertToGLFormat(img);
+
+    // bind image to gl texture
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, textureID);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, formattedImage.width(),
+                 formattedImage.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, formattedImage.bits());
+
+    return textureID;
+}
 
 /**
   Loads the cube map into video memory.

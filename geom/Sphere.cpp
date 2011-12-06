@@ -1,5 +1,6 @@
 #include "Sphere.h"
 #include "math.h"
+#include <qgl.h>
 
 Sphere::Sphere(int param1, int param2) : Shape(param1, param2, 0) {
     m_parameter1 = validateParam1(param1);
@@ -14,6 +15,56 @@ int Sphere::getTriangleCount() {
 
 int Sphere::getVertexCount() {
     return 2 + (m_parameter1 - 1) * m_parameter2;
+}
+
+void Sphere::render() {
+    glBegin(GL_TRIANGLES);
+
+    int i;
+    for (i = 0; i < getTriangleCount(); i++) {
+        int *triangle = &m_triangles[i * 3];
+        float *v1 = &m_vertices[triangle[0] * 4];
+        float *v2 = &m_vertices[triangle[1] * 4];
+        float *v3 = &m_vertices[triangle[2] * 4];
+        float *n1 = &m_vertexNormals[triangle[0] * 4];
+        float *n2 = &m_vertexNormals[triangle[1] * 4];
+        float *n3 = &m_vertexNormals[triangle[2] * 4];
+
+        // compute texture coordinates
+        float u1, u2, u3, vv1, vv2, vv3;
+        computeTextureCoordinates(v1, &u1, &vv1);
+        computeTextureCoordinates(v2, &u2, &vv2);
+        computeTextureCoordinates(v3, &u3, &vv3);
+
+        glTexCoord2f(u1, vv1);
+        glNormal3f(n1[0], n1[1], n1[2]);
+        glVertex3f(v1[0], v1[1], v1[2]);
+
+        glTexCoord2f(u2, vv2);
+        glNormal3f(n2[0], n2[1], n2[2]);
+        glVertex3f(v2[0], v2[1], v2[2]);
+
+        glTexCoord2f(u3, vv3);
+        glNormal3f(n3[0], n3[1], n3[2]);
+        glVertex3f(v3[0], v3[1], v3[2]);
+    }
+
+    glEnd();
+}
+
+void Sphere::computeTextureCoordinates(float *vertex, float *u, float *v) {
+    float t = atan2(vertex[2], vertex[0]);
+    if (t < 0)
+        *u = -t / (2 * M_PI);
+    else
+        *u = 1 - t / (2 * M_PI);
+
+    float p = asin(vertex[1] / .5);
+    *v = p / M_PI + .5;
+
+    if (*v == 0 || *v == 1) {
+        *u = .5;
+    }
 }
 
 void Sphere::calculateGeometry() {

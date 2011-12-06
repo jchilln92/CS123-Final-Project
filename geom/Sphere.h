@@ -9,9 +9,11 @@ public:
     virtual ~Sphere();
 
     void calculateGeometry();
+    void render();
 protected:
     int getTriangleCount();
     int getVertexCount();
+    void computeTextureCoordinates(float *vertex, float *u, float *v);
 
     int validateParam1(int param1) { return param1 < 2 ? 2 : param1; }
     int validateParam2(int param2) { return param2 < 3 ? 3 : param2; }

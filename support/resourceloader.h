@@ -21,6 +21,8 @@ struct Model
    **/
 namespace ResourceLoader
 {
+    GLuint loadTextureImage(const char *filename);
+
     // Returns the model
     Model loadObjModel(QString filePath);
 

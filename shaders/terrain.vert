@@ -1,13 +1,13 @@
 #extension GL_EXT_gpu_shader4 : enable
 
 float curve(float x) {
-    return x * x * (3.0 - 2.0*x);
+    return x*x*x*(x*(6*x-15) + 10);
 }
 
 vec3 randomVector(int x, int y, int z, int seed) {
     x = (x << 13) ^ (x + seed);
-    y = (y << 7) ^ (y + seed);
-    z = (z << 11) ^ (z + seed);
+    y = (y << 13) ^ (y + seed);
+    z = (z << 13) ^ (z + seed);
 
     vec3 random =  vec3( ( 1.0 - ( (x * (x * x * 15731 + 789221) + 1376312589) & 0x7fffffff) / 1073741824.0),
                          ( 1.0 - ( (y * (y * y * 18637 + 829463) + 1265124733) & 0x7fffffff) / 1073741824.0),
@@ -63,8 +63,19 @@ float perlinNoise(vec3 pos, int seed, int octaves) {
     return offset;
 }
 
+varying float intensity;
+varying float height;
+
 void main() {
-    vec3 perturbedVertex = gl_Vertex.xyz + .05 * perlinNoise(gl_Vertex.xyz, 12345, 10) * gl_Normal;
+    vec3 perturbedVertex = gl_Vertex.xyz + .05 * perlinNoise(gl_Vertex.xyz, 98738, 1) * gl_Normal;
     gl_Position = gl_ModelViewProjectionMatrix * vec4(perturbedVertex, 1);
+
+    vec3 normal = normalize(gl_NormalMatrix * gl_Normal);
+    vec3 light = normalize(gl_LightSource[0].position - (gl_ModelViewMatrix * gl_Vertex)).xyz;
+    intensity = max(0.0, dot(normal, light));
+
+    gl_TexCoord[0] = gl_MultiTexCoord0;
+
+    height = perturbedVertex.z;
 }
 

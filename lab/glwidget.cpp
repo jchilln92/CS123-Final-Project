@@ -133,7 +133,8 @@ void GLWidget::loadCubeMap()
 void GLWidget::createShaderPrograms()
 {
     const QGLContext *ctx = context();
-    m_shaderPrograms["terrain"] = ResourceLoader::newVertShaderProgram(ctx, "../CS123-Final-Project/shaders/terrain.vert");
+    m_shaderPrograms["terrain"] = ResourceLoader::newShaderProgram(ctx, "../CS123-Final-Project/shaders/terrain.vert",
+                                                                   "../CS123-Final-Project/shaders/terrain.frag");
 
     // old
     m_shaderPrograms["reflect"] = ResourceLoader::newShaderProgram(ctx, "../CS123-Final-Project/shaders/reflect.vert",
@@ -208,6 +209,13 @@ void GLWidget::paintGL()
     int width = this->width();
     int height = this->height();
 
+    // load a test texture
+    glBindTexture(GL_TEXTURE_2D, ResourceLoader::loadTextureImage("/course/cs123/data/image/terrain/grass.JPG"));
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    m_shaderPrograms["terrain"]->setUniformValue("testTexture", 0);
+
     // draw scene
     applyPerspectiveCamera(width, height);
     renderScene();
@@ -219,7 +227,7 @@ void GLWidget::paintGL()
     /*// Render the scene to a framebuffer
     m_framebufferObjects["fbo_0"]->bind();
     applyPerspectiveCamera(width, height);
-    renderScene();Using OpenGL Version 4.1.0 NVIDIA 270.41.19
+    renderScene();
 
     m_framebufferObjects["fbo_0"]->release();
 
@@ -286,11 +294,21 @@ void GLWidget::renderScene() {
 
     glEnable(GL_CULL_FACE);
 
-    glPolygonMode(GL_FRONT, GL_LINE);
+    glPolygonMode(GL_FRONT, GL_FILL);
     m_shaderPrograms["terrain"]->bind();
     m_planet->render();
+    /*int x, y;
+    for (y = 0; y < 99; y++) {
+        glBegin(GL_TRIANGLE_STRIP);
+        for (x = 0; x < 100; x++) {
+            glNormal3f(0, 0, 1);
+            glVertex3f(x/100.0-.5, (y+1)/100.0-.5, 0);
+            glNormal3f(0, 0, 1);
+            glVertex3f(x/100.0-.5, y/100.0-.5, 0);
+        }
+        glEnd();
+    }*/
     m_shaderPrograms["terrain"]->release();
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
     // Disable culling, depth testing and cube maps
     glDisable(GL_CULL_FACE);
