@@ -288,8 +288,8 @@ void GLWidget::renderScene() {
 
     glPolygonMode(GL_FRONT, GL_FILL);
     m_shaderPrograms["terrain"]->bind();
-    m_planet->render();
-    /*int x, y;
+    // m_planet->render();
+    int x, y;
     for (y = 0; y < 99; y++) {
         glBegin(GL_TRIANGLE_STRIP);
         for (x = 0; x < 100; x++) {
@@ -299,7 +299,7 @@ void GLWidget::renderScene() {
             glVertex3f(x/100.0-.5, y/100.0-.5, 0);
         }
         glEnd();
-    }*/
+    }
     m_shaderPrograms["terrain"]->release();
 
     // Disable culling, depth testing and cube maps
