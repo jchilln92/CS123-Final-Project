@@ -21,7 +21,6 @@ GLuint ResourceLoader::loadTextureImage(const char *filename) {
     QImage formattedImage = QGLWidget::convertToGLFormat(img);
 
     // bind image to gl texture
-    glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, textureID);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, formattedImage.width(),
                  formattedImage.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, formattedImage.bits());

@@ -67,7 +67,7 @@ varying float intensity;
 varying float height;
 
 void main() {
-    vec3 perturbedVertex = gl_Vertex.xyz + .05 * perlinNoise(gl_Vertex.xyz, 98738, 1) * gl_Normal;
+    vec3 perturbedVertex = gl_Vertex.xyz + .05 * perlinNoise(gl_Vertex.xyz, 12837496, 5) * gl_Normal;
     gl_Position = gl_ModelViewProjectionMatrix * vec4(perturbedVertex, 1);
 
     vec3 normal = normalize(gl_NormalMatrix * gl_Normal);

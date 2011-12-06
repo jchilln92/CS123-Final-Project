@@ -9,12 +9,14 @@ Shape::Shape(int param1, int param2, float param3) {
     m_vertices = NULL;
     m_vertexNormals = NULL;
     m_triangles = NULL;
+    m_textureCoordinates = NULL;
 }
 
 Shape::~Shape() {
     delete[] m_vertices;
     delete[] m_vertexNormals;
     delete[] m_triangles;
+    delete[] m_textureCoordinates;
 }
 
 /* Parameters */
@@ -66,10 +68,12 @@ void Shape::initializeContainers() {
     delete[] m_triangles;
     delete[] m_vertices;
     delete[] m_vertexNormals;
+    delete[] m_textureCoordinates;
 
     m_triangles = new int[3 * getTriangleCount()];
     m_vertices = new float[4 * getVertexCount()];
     m_vertexNormals = new float[4 * getVertexCount()];
+    m_textureCoordinates = new float[2 * getVertexCount()];
 }
 
 void Shape::setVertex(int v_idx, float x, float y, float z) {
@@ -77,6 +81,11 @@ void Shape::setVertex(int v_idx, float x, float y, float z) {
     m_vertices[v_idx * 4 + 1] = y;
     m_vertices[v_idx * 4 + 2] = z;
     m_vertices[v_idx * 4 + 3] = 1;
+
+    float u, v;
+    computeTextureCoordinates(&m_vertices[v_idx * 4], &u, &v);
+    m_textureCoordinates[v_idx * 2 + 0] = u;
+    m_textureCoordinates[v_idx * 2 + 1] = v;
 }
 
 void Shape::setVertexNormal(int v_idx, float x, float y, float z) {

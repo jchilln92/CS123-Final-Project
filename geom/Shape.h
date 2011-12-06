@@ -33,10 +33,12 @@ protected:
     // geometry information
     float *m_vertices; // 1d array, 4 entries per vertex
     float *m_vertexNormals; // 1d array, 4 entries per normal, indices match m_vertices
-    int *m_triangles; // 3 entries per triangle, indices into m_points
+    float *m_textureCoordinates; // 1d array, 2 entries per tex coord, indices match m_vertices
+    int *m_triangles; // 3 entries per triangle, indices into m_vertices
 
     virtual int getTriangleCount() = 0;
     virtual int getVertexCount() = 0;
+    virtual void computeTextureCoordinates(float *pos, float *u, float *v) = 0;
     void initializeContainers();
 
     void setVertex(int v_idx, float x, float y, float z);
