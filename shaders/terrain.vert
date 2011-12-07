@@ -1,8 +1,14 @@
 #extension GL_EXT_gpu_shader4 : enable
+uniform float global_amp_scale = 0.05;
+uniform float global_pos_scale = 2.0;
+uniform float norm_eps = 0.0001;
+varying float intensity;
+varying float height;
 
 float curve(float x) {
     return x*x*x*(x*(6*x-15) + 10);
 }
+
 /* Value noise implementation
 float randomValue(int x, int y, int z, int seed) {
     int n = x * 57 + y * 13 + z + seed;
@@ -11,7 +17,7 @@ float randomValue(int x, int y, int z, int seed) {
 }
 
 float interpolatedValue(vec3 pos, int seed) {
-    vec3 posScaled = 2.0 * pos;
+    vec3 posScaled = global_pos_scale * pos;
 
     int px = int(posScaled.x);
     int py = int(posScaled.y);
@@ -61,7 +67,7 @@ vec3 randomVector(int x, int y, int z, int seed) {
 }
 
 float interpolatedNoise(vec3 pos, int seed) {
-    vec3 posScaled = 2.0 * pos;
+    vec3 posScaled = global_pos_scale * pos;
 
     int px = int(posScaled.x);
     int py = int(posScaled.y);
@@ -103,16 +109,27 @@ float perlinNoise(vec3 pos, int seed, int octaves) {
         frequency = 2 << i;
         amplitude = 1 / sqrt(frequency);
         offset += interpolatedNoise(frequency * pos, seed) * amplitude;
-        // offset += interpolatedValue(frequency * pos, seed) * amplitude;
     }
     return offset;
 }
 
-varying float intensity;
-varying float height;
+vec3 perturbedNormal(vec3 pos, vec3 norm, int seed, int octaves) {
+    vec3 ortho_1 = vec3(-norm.y,norm.x,0);
+    vec3 ortho_2 = cross(norm,ortho_1);
+
+    vec3 eps_o1 = norm_eps * ortho_1;
+    vec3 eps_o2 = norm_eps * ortho_2;
+
+    float n_1 = perlinNoise(pos+eps_o1,seed,octaves);
+    float n_2 = perlinNoise(pos-eps_o1,seed,octaves);
+    float n_3 = perlinNoise(pos+eps_o2,seed,octaves);
+    float n_4 = perlinNoise(pos-eps_o2,seed,octaves);
+
+    return normalize(cross(2*eps_o1+(n_1-n_2)*normal,2*eps_o2+(n_3-n_4)*normal));
+}
 
 void main() {
-    vec3 perturbedVertex = gl_Vertex.xyz + .05 * perlinNoise(gl_Vertex.xyz, 98738, 10) * gl_Normal;
+    vec3 perturbedVertex = gl_Vertex.xyz + global_amp_scale * perlinNoise(gl_Vertex.xyz, 98738, 10) * gl_Normal;
     gl_Position = gl_ModelViewProjectionMatrix * vec4(perturbedVertex, 1);
 
     vec3 normal = normalize(gl_NormalMatrix * gl_Normal);
