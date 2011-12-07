@@ -1,5 +1,6 @@
 #include "Planet.h"
 #include "Sphere.h"
+#include "support/resourceloader.h"
 #include <qgl.h>
 
 #define PARAM_VERY_LOW  15
@@ -45,7 +46,19 @@ Planet::Planet(Vector3 center, float radius) {
     m_center = center;
 }
 
-Planet::~Planet() {}
+Planet::~Planet() {
+}
+
+void Planet::setTexture(const char *filename, int i) {
+    if (i < MAX_PLANET_TEXTURES) {
+        glDeleteTextures(1, &textures[i]);
+        textures[i] = ResourceLoader::loadTextureImage(filename);
+    }
+}
+
+GLuint Planet::getTexture(int i) {
+    return textures[i];
+}
 
 void Planet::setDetail(MeshDetail detail) {
     m_renderDetail = detail;
@@ -54,8 +67,6 @@ void Planet::setDetail(MeshDetail detail) {
 void Planet::render() {
     glPushMatrix();
     glTranslatef(m_center.x, m_center.y, m_center.z);
-    // float scale = m_radius / .5;
-    // glScalef(scale, scale, scale);
 
     switch (m_renderDetail) {
     case VERY_LOW:

@@ -97,8 +97,10 @@ void GLWidget::initializeResources()
 
     m_planet = new Planet();
     m_planet->setDetail(LOW);
-
-    noise = new PerlinNoise(.5, .5);
+    m_planet->setTexture("/course/cs123/data/image/terrain/grass.JPG", 0);
+    m_planet->setTexture("/course/cs123/data/image/terrain/dirt.JPG", 1);
+    m_planet->setTexture("/course/cs123/data/image/terrain/snow.JPG", 2);
+    m_planet->setTexture("/course/cs123/data/image/terrain/rock.JPG", 3);
 
     loadCubeMap();
     cout << "Loaded cube map..." << endl;
@@ -147,15 +149,6 @@ void GLWidget::createShaderPrograms()
 
 /**
   Allocate framebuffer objects.
-Using OpenGL Version 4.1.0 NVIDIA 270.41.19
-
---- Loading Resources ---
-Loaded skybox...
-Loaded cube map...
-Loaded shader programs...
-Loaded framebuffer objects...
- --- Finish Loading Resources ---
-Unrecognised OpenGL version
   @param width: the viewport width
   @param height: the viewport height
  **/
@@ -210,11 +203,10 @@ void GLWidget::paintGL()
     int height = this->height();
 
     // load a test texture
-    glBindTexture(GL_TEXTURE_2D, ResourceLoader::loadTextureImage("/course/cs123/data/image/terrain/grass.JPG"));
+    glBindTexture(GL_TEXTURE_2D, m_planet->getTexture(0));
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    m_shaderPrograms["terrain"]->setUniformValue("testTexture", 0);
+    m_shaderPrograms["terrain"]->setUniformValue("tex1", 0);
 
     // draw scene
     applyPerspectiveCamera(width, height);

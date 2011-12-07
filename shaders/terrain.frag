@@ -1,9 +1,11 @@
 varying float height;
 varying float intensity;
 
-uniform sampler2D testTexture;
+uniform sampler2D tex1;
+uniform sampler2D tex2;
+uniform sampler2D tex3;
+uniform sampler2D tex4;
 
 void main() {
-    //gl_FragColor = texture2D(testTexture, gl_TexCoord[0].st) * intensity;
-    gl_FragColor = (height+.1)/.2 * vec4(1.0, 1.0, 1.0, 1.0);
+    gl_FragColor = texture2D(tex1, gl_TexCoord[0].st) * intensity;
 }

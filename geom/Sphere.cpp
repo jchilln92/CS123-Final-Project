@@ -29,22 +29,19 @@ void Sphere::render() {
         float *n1 = &m_vertexNormals[triangle[0] * 4];
         float *n2 = &m_vertexNormals[triangle[1] * 4];
         float *n3 = &m_vertexNormals[triangle[2] * 4];
+        float *t1 = &m_textureCoordinates[triangle[0] * 2];
+        float *t2 = &m_textureCoordinates[triangle[1] * 2];
+        float *t3 = &m_textureCoordinates[triangle[2] * 2];
 
-        // compute texture coordinates
-        float u1, u2, u3, vv1, vv2, vv3;
-        computeTextureCoordinates(v1, &u1, &vv1);
-        computeTextureCoordinates(v2, &u2, &vv2);
-        computeTextureCoordinates(v3, &u3, &vv3);
-
-        glTexCoord2f(u1, vv1);
+        glTexCoord2f(t1[0], t1[1]);
         glNormal3f(n1[0], n1[1], n1[2]);
         glVertex3f(v1[0], v1[1], v1[2]);
 
-        glTexCoord2f(u2, vv2);
+        glTexCoord2f(t2[0], t2[1]);
         glNormal3f(n2[0], n2[1], n2[2]);
         glVertex3f(v2[0], v2[1], v2[2]);
 
-        glTexCoord2f(u3, vv3);
+        glTexCoord2f(t3[0], t3[1]);
         glNormal3f(n3[0], n3[1], n3[2]);
         glVertex3f(v3[0], v3[1], v3[2]);
     }
