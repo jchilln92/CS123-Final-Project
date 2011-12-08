@@ -49,7 +49,6 @@ GLWidget::~GLWidget()
     const_cast<QGLContext *>(context())->deleteTexture(m_cubeMap);
 
     delete m_planet;
-    delete noise;
 }
 
 /**
@@ -202,12 +201,6 @@ void GLWidget::paintGL()
     int width = this->width();
     int height = this->height();
 
-    // load a test texture
-    glBindTexture(GL_TEXTURE_2D, m_planet->getTexture(0));
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    m_shaderPrograms["terrain"]->setUniformValue("tex1", 0);
-
     // draw scene
     applyPerspectiveCamera(width, height);
     renderScene();
@@ -288,8 +281,24 @@ void GLWidget::renderScene() {
 
     glPolygonMode(GL_FRONT, GL_FILL);
     m_shaderPrograms["terrain"]->bind();
-    // m_planet->render();
-    int x, y;
+
+    // load textures
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, m_planet->getTexture(0));
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, m_planet->getTexture(1));
+    glActiveTexture(GL_TEXTURE2);
+    glBindTexture(GL_TEXTURE_2D, m_planet->getTexture(2));
+    glActiveTexture(GL_TEXTURE3);
+    glBindTexture(GL_TEXTURE_2D, m_planet->getTexture(3));
+    glActiveTexture(GL_TEXTURE0); // make renderText work again
+    m_shaderPrograms["terrain"]->setUniformValue("tex1", (GLuint)0);
+    m_shaderPrograms["terrain"]->setUniformValue("tex2", (GLuint)1);
+    m_shaderPrograms["terrain"]->setUniformValue("tex3", (GLuint)2);
+    m_shaderPrograms["terrain"]->setUniformValue("tex4", (GLuint)3);
+
+    m_planet->render();
+    /*int x, y;
     for (y = 0; y < 99; y++) {
         glBegin(GL_TRIANGLE_STRIP);
         for (x = 0; x < 100; x++) {
@@ -299,7 +308,7 @@ void GLWidget::renderScene() {
             glVertex3f(x/100.0-.5, y/100.0-.5, 0);
         }
         glEnd();
-    }
+    }*/
     m_shaderPrograms["terrain"]->release();
 
     // Disable culling, depth testing and cube maps
