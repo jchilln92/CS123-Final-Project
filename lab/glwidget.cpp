@@ -68,9 +68,6 @@ void GLWidget::initializeGL()
     glEnable(GL_LIGHTING);
     glShadeModel(GL_SMOOTH);
 
-    //glDisable(GL_LIGHTING);
-    //glShadeModel(GL_FLAT);
-
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
     // Load resources, including creating shader programs and framebuffer objects
@@ -96,6 +93,9 @@ void GLWidget::initializeResources()
 
     m_planet = new Planet();
     m_planet->setDetail(LOW);
+    //m_planet->setCenter(Vector3(1, 1, 1));
+    m_planet->setAxis(Vector3(-1, 1, 0));
+    m_planet->setAxialRotation(M_PI);
     m_planet->setTexture("/course/cs123/data/image/terrain/grass.JPG", 0);
     m_planet->setTexture("/course/cs123/data/image/terrain/dirt.JPG", 1);
     m_planet->setTexture("/course/cs123/data/image/terrain/snow.JPG", 2);
@@ -243,7 +243,7 @@ void GLWidget::paintGL()
         // Render the blurred brightpass filter result to fbo 1
         renderBlur(width / scales[i], height / scales[i]);
 
-        // Bind the image from fbo to a texture
+        // Bind the image from fbo to a textuabout:re
         glBindTexture(GL_TEXTURE_2D, m_framebufferObjects["fbo_1"]->texture());
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -281,7 +281,6 @@ void GLWidget::renderScene() {
 
     glPolygonMode(GL_FRONT, GL_FILL);
     m_shaderPrograms["terrain"]->bind();
-    m_planet->render();
 
     // load textures
     glActiveTexture(GL_TEXTURE0);

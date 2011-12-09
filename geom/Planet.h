@@ -12,8 +12,7 @@ class Planet {
 public:
     static void initStaticResources();
 
-    Planet();
-    Planet(Vector3 center, float radius);
+    Planet(Vector3 center = Vector3(0, 0, 0), Vector3 axis = Vector3(0, 1, 0), float radius = .5);
     virtual ~Planet();
 
     void setDetail(MeshDetail detail);
@@ -23,9 +22,17 @@ public:
     GLuint getTexture(int i);
 
     Vector3 getCenter() { return m_center; }
+    Vector3 getAxis() { return m_axis; }
     float getRadius() { return m_radius; }
+    float getAxialRotation() { return m_axialRotation; }
+    void setRadius(float radius) { m_radius = radius; }
+    void setCenter(Vector3 center) { m_center = center; }
+    void setAxis(Vector3 axis) { m_axis = axis; m_axis.normalize(); }
+    void setAxialRotation(float radians) { m_axialRotation = fmod(radians, M_2PI); }
 private:
     Vector3 m_center;
+    Vector3 m_axis;
+    float m_axialRotation;
     float m_radius;
     MeshDetail m_renderDetail;
 

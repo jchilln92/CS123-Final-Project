@@ -34,16 +34,14 @@ void Planet::initStaticResources() {
     staticInitialized = true;
 }
 
-Planet::Planet() {
-    Planet(Vector3(0, 0, 0), .5);
-}
-
-Planet::Planet(Vector3 center, float radius) {
+Planet::Planet(Vector3 center, Vector3 axis, float radius) {
     initStaticResources();
 
     m_renderDetail = MEDIUM; // set default mesh level
     m_radius = radius;
     m_center = center;
+    m_axis = axis;
+    m_axialRotation = 0;
 }
 
 Planet::~Planet() {
@@ -66,7 +64,23 @@ void Planet::setDetail(MeshDetail detail) {
 
 void Planet::render() {
     glPushMatrix();
+
+    float rad2deg = 180.0/M_PI;
+
+    // move the planet into place
     glTranslatef(m_center.x, m_center.y, m_center.z);
+
+    // rotate top into position, rotate around axis
+    float zangle = acos(m_axis.dot(Vector3(0, 1, 0)));
+    glRotatef(zangle * rad2deg, 0, 0, 1);
+    float xangle = asin(m_axis.dot(Vector3(0, 0, 1)));
+    glRotatef(xangle * rad2deg, 1, 0, 0);
+
+    glRotatef(m_axialRotation * rad2deg, 0, 1, 0);
+
+    // scale the planet to the right size
+    float scale = m_radius / .5;
+    glScalef(scale, scale, scale);
 
     switch (m_renderDetail) {
     case VERY_LOW:
