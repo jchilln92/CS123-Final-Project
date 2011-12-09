@@ -297,6 +297,12 @@ void GLWidget::renderScene() {
     m_shaderPrograms["terrain"]->setUniformValue("tex3", (GLuint)2);
     m_shaderPrograms["terrain"]->setUniformValue("tex4", (GLuint)3);
 
+    // load in other uniforms
+    m_shaderPrograms["terrain"]->setUniformValue("global_amp_scale",(GLfloat)0.05);
+    m_shaderPrograms["terrain"]->setUniformValue("global_pos_scale",(GLfloat)2.0);
+    m_shaderPrograms["terrain"]->setUniformValue("planet_seed",(GLuint)98738);
+    m_shaderPrograms["terrain"]->setUniformValue("noise_octaves",(GLuint)3);
+
     m_planet->render();
     m_shaderPrograms["terrain"]->release();
 
