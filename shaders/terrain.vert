@@ -1,9 +1,11 @@
 #extension GL_EXT_gpu_shader4 : enable
-uniform float global_amp_scale = 0.05;
-uniform float global_pos_scale = 2.0;
-uniform float norm_eps = 0.00001;
-uniform int planet_seed = 98738;
-uniform int noise_octaves = 2;
+#define norm_eps 0.00001
+#define pi 3.1415926
+
+uniform float global_amp_scale;
+uniform float global_pos_scale;
+uniform int planet_seed;
+uniform int noise_octaves;
 
 varying float intensity;
 varying float height;
@@ -17,7 +19,7 @@ vec3 rotx(vec3 v, float angle) {
 }
 
 float curve(float x) {
-    return x*x*x*(x*(6*x-15) + 10);
+    return x*x*x*(x*(6.0*x-15.0) + 10.0);
 }
 
 /* Value noise implementation
@@ -126,7 +128,6 @@ float perlinNoise(vec3 pos, int seed, int octaves) {
 }
 
 vec3 perturbedNormal(vec3 pos, vec3 norm, float disp, int seed, int octaves) {
-    float pi = 3.1415926;
     float u = mod(gl_MultiTexCoord0.s+0.25,1.0);
     float v = 1.0-gl_MultiTexCoord0.t;
 
@@ -158,8 +159,8 @@ void main() {
     vec3 perturbedVertex = gl_Vertex.xyz + height * gl_Normal;
     gl_Position = gl_ModelViewProjectionMatrix * vec4(perturbedVertex, 1);
 
-    vec3 normal = normalize((gl_NormalMatrix * perturbedNormal(gl_Vertex, gl_Normal, height, planet_seed, noise_octaves)).xyz);
-    vec3 light = normalize((gl_LightSource[0].position - (gl_ModelViewMatrix * gl_Vertex)).xyz);
+    vec3 normal = normalize(gl_NormalMatrix * perturbedNormal(gl_Vertex, gl_Normal, height, planet_seed, noise_octaves)).xyz;
+    vec3 light = normalize(gl_LightSource[0].position - (gl_ModelViewMatrix * gl_Vertex)).xyz;
     intensity = max(0.0, dot(normal, light));
 
     gl_TexCoord[0] = gl_MultiTexCoord0;
