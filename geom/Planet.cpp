@@ -51,7 +51,7 @@ Planet::~Planet() {
 
 void Planet::setTexture(const char *filename, int i) {
     if (i < MAX_PLANET_TEXTURES) {
-        glDeleteTextures(1, &textures[i]);
+        //glDeleteTextures(1, &textures[i]);
         textures[i] = ResourceLoader::loadTextureImage(filename);
     }
 }

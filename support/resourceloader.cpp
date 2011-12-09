@@ -7,6 +7,7 @@
 #include "glm.h"
 
 GLuint ResourceLoader::loadTextureImage(const char *filename) {
+    // generate new texture id
     GLuint textureID;
     glGenTextures(1, &textureID);
 
@@ -18,12 +19,17 @@ GLuint ResourceLoader::loadTextureImage(const char *filename) {
         return 0;
     }
 
+    img = img.mirrored(false, true);
+
     QImage formattedImage = QGLWidget::convertToGLFormat(img);
 
     // bind image to gl texture
     glBindTexture(GL_TEXTURE_2D, textureID);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, formattedImage.width(),
                  formattedImage.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, formattedImage.bits());
+    glBindTexture(GL_TEXTURE_2D, 0);
 
     return textureID;
 }

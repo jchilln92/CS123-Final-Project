@@ -8,6 +8,14 @@ varying float height;
 
 varying vec3 norm;
 
+vec3 roty(vec3 v, float angle) {
+    return mat3(cos(angle),0,-sin(angle),0,1,0,sin(angle),0,cos(angle))*v;
+}
+
+vec3 rotx(vec3 v, float angle) {
+    return mat3(1,0,0,0,cos(angle),sin(angle),0,-sin(angle),cos(angle))*v;
+}
+
 float curve(float x) {
     return x*x*x*(x*(6*x-15) + 10);
 }
@@ -117,8 +125,15 @@ float perlinNoise(vec3 pos, int seed, int octaves) {
 }
 
 vec3 perturbedNormal(vec3 pos, vec3 norm, int seed, int octaves) {
-    vec3 ortho_1 = vec3(-norm.y,norm.x,0);
-    vec3 ortho_2 = cross(norm,ortho_1);
+    float pi = 3.1415926;
+    float u = mod(gl_MultiTexCoord0.s+0.25,1.0);
+    float v = 1-gl_MultiTexCoord0.t;
+
+    float theta = u * 2 * pi;
+    float phi = v * pi;
+
+    vec3 ortho_1 = roty(rotx(vec3(-1,0,0),phi),theta);
+    vec3 ortho_2 = roty(rotx(vec3(0,0,1),phi),theta);
 
     vec3 eps_o1 = norm_eps * ortho_1;
     vec3 eps_o2 = norm_eps * ortho_2;
@@ -129,7 +144,7 @@ vec3 perturbedNormal(vec3 pos, vec3 norm, int seed, int octaves) {
     float n_3 = global_amp_scale * perlinNoise(pos+eps_o2,seed,octaves);
     float n_4 = global_amp_scale * perlinNoise(pos-eps_o2,seed,octaves);
 
-    n_1 = n_2 = n_3 = n_4 = n_0;
+    // n_1 = n_2 = n_3 = n_4 = n_0;
 
     vec3 v_1 = eps_o1+(n_1-n_0)*norm;
     vec3 v_2 = -eps_o1+(n_2-n_0)*norm;
@@ -138,8 +153,6 @@ vec3 perturbedNormal(vec3 pos, vec3 norm, int seed, int octaves) {
 
     return normalize(cross(v_1,v_3)+cross(v_3,v_2)+cross(v_2,v_4)+cross(v_4,v_1));
 }
-
-
 
 /*
     vec3 ortho_1 = vec3(-norm.y,norm.x,0);
@@ -157,13 +170,13 @@ vec3 perturbedNormal(vec3 pos, vec3 norm, int seed, int octaves) {
 */
 
 void main() {
-    vec3 perturbedVertex = gl_Vertex.xyz + global_amp_scale * perlinNoise(gl_Vertex.xyz, 98738, 10) * gl_Normal;
+    vec3 perturbedVertex = gl_Vertex.xyz + global_amp_scale * perlinNoise(gl_Vertex.xyz, 98738, 2) * gl_Normal;
     gl_Position = gl_ModelViewProjectionMatrix * vec4(perturbedVertex, 1);
 
     // vec3 normal = normalize(gl_NormalMatrix * gl_Normal);
-    vec3 normal = normalize(gl_NormalMatrix * perturbedNormal(gl_Vertex, gl_Normal, 98738, 10));
-    norm = vec4(normal,1);
-    vec3 light = normalize(vec3(4.0,4.0,4.0) - (gl_ModelViewMatrix * gl_Vertex)).xyz;
+    vec3 normal = normalize(gl_NormalMatrix * perturbedNormal(gl_Vertex, gl_Normal, 98738, 2));
+    norm = vec4(perturbedNormal(gl_Vertex, gl_Normal, 98738, 10),1);
+    vec3 light = normalize((gl_ModelViewMatrix*vec4(0.0,0.0,10.0,1.0)) - (gl_ModelViewMatrix * gl_Vertex)).xyz;
     intensity = max(0.0, dot(normal, light));
 
     gl_TexCoord[0] = gl_MultiTexCoord0;
