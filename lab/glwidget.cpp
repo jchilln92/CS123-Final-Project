@@ -281,7 +281,6 @@ void GLWidget::renderScene() {
 
     glPolygonMode(GL_FRONT, GL_FILL);
     m_shaderPrograms["terrain"]->bind();
-    m_planet->render();
 
     // load textures
     glActiveTexture(GL_TEXTURE0);
