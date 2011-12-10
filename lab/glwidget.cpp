@@ -297,6 +297,16 @@ void GLWidget::renderScene() {
     m_shaderPrograms["terrain"]->setUniformValue("tex3", (GLuint)2);
     m_shaderPrograms["terrain"]->setUniformValue("tex4", (GLuint)3);
 
+    // load data about how the textures are to be mapped
+    m_shaderPrograms["terrain"]->setUniformValue("tex1_min", (GLfloat)-0.02);
+    m_shaderPrograms["terrain"]->setUniformValue("tex1_max", (GLfloat)0);
+    m_shaderPrograms["terrain"]->setUniformValue("tex2_min", (GLfloat)0);
+    m_shaderPrograms["terrain"]->setUniformValue("tex2_max", (GLfloat)0.02);
+    m_shaderPrograms["terrain"]->setUniformValue("tex3_min", (GLfloat)0.02);
+    m_shaderPrograms["terrain"]->setUniformValue("tex3_max", (GLfloat)0.1);
+    m_shaderPrograms["terrain"]->setUniformValue("tex4_min", (GLfloat)-0.1);
+    m_shaderPrograms["terrain"]->setUniformValue("tex4_max", (GLfloat)-0.02);
+
     // load in other uniforms
     m_shaderPrograms["terrain"]->setUniformValue("global_amp_scale",(GLfloat)0.05);
     m_shaderPrograms["terrain"]->setUniformValue("global_pos_scale",(GLfloat)2.0);
