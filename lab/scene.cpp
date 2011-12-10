@@ -17,12 +17,14 @@ std::vector<Planet>& Scene::getBodies() {
 void Scene::doTick() {
     m_time++;
 
-    int period = 10000;
-    float rot = (m_time % period) / (float)period;
-    rot *= M_2PI;
     for (unsigned int i = 0; i < m_bodies.size(); i++) {
-        m_bodies.at(i).setAxialRotation(rot);
-        m_bodies.at(i).updatePosition(m_time);
+        Planet *body = &m_bodies.at(i);
+
+        int period = (int)body->getAxialPeriod();
+        float rot = (m_time % period) / (float)period;
+        rot *= M_2PI;
+        body->setAxialRotation(rot);
+        body->updatePosition(m_time);
     }
 }
 
