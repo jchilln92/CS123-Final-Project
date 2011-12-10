@@ -4,6 +4,7 @@
 #include "math/vector.h"
 #include "MeshDetail.h"
 #include <qgl.h>
+#include "Orbit.h"
 class Sphere;
 
 #define MAX_PLANET_TEXTURES 4
@@ -22,21 +23,26 @@ public:
     void setTexture(const char *filename, int i);
     GLuint getTexture(int i);
 
-    Vector3 getCenter() { return m_center; }
+    void updatePosition(float t);
+
     Vector3 getAxis() { return m_axis; }
+    Vector3 getCenter() { return m_center; }
     float getRadius() { return m_radius; }
     float getAxialRotation() { return m_axialRotation; }
     void setRadius(float radius) { m_radius = radius; }
-    void setCenter(Vector3 center) { m_center = center; }
+    void setOrbit(Orbit orbit) { m_orbit = orbit; }
     void setAxis(Vector3 axis) { m_axis = axis; m_axis.normalize(); }
     void setAxialRotation(float radians) { m_axialRotation = fmod(radians, M_2PI); }
 
     int getSeed() { return m_seed; }
     int getOctaveCount() { return m_octaveCount; }
 private:
+    Orbit m_orbit;
     Vector3 m_center;
+
     Vector3 m_axis;
     float m_axialRotation;
+
     float m_radius;
     MeshDetail m_renderDetail;
     int m_seed;

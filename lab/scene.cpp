@@ -17,11 +17,13 @@ std::vector<Planet>& Scene::getBodies() {
 void Scene::doTick() {
     m_time++;
 
-    int period = 2000;
+    int period = 10000;
     float rot = (m_time % period) / (float)period;
     rot *= M_2PI;
-    for (unsigned int i = 0; i < m_bodies.size(); i++)
+    for (unsigned int i = 0; i < m_bodies.size(); i++) {
         m_bodies.at(i).setAxialRotation(rot);
+        m_bodies.at(i).updatePosition(m_time);
+    }
 }
 
 void Scene::updateBodyDetails(Camera *cam) {

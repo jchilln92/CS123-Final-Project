@@ -11,6 +11,7 @@
 #include "glm.h"
 
 #include "geom/Planet.h"
+#include "geom/Orbit.h"
 #include "lab/scene.h"
 #include "noise/PerlinNoise.h"
 
@@ -28,13 +29,14 @@ static const int MAX_FPS = 120;
   Constructor.  Initialize all member variables here.
  **/
 GLWidget::GLWidget(QWidget *parent) : QGLWidget(parent),
-    m_timer(this), m_prevTime(0), m_prevFps(0.f), m_fps(0.f),
+    m_drawTimer(this), m_simTimer(this), m_prevTime(0), m_prevFps(0.f), m_fps(0.f),
     m_font("Deja Vu Sans Mono", 8, 4)
 {
     setFocusPolicy(Qt::StrongFocus);
     setMouseTracking(true);
 
-    connect(&m_timer, SIGNAL(timeout()), this, SLOT(update()));
+    connect(&m_drawTimer, SIGNAL(timeout()), this, SLOT(update()));
+    connect(&m_simTimer, SIGNAL(timeout()), this, SLOT(doSimTick()));
 
     m_scene = new Scene();
 }
@@ -77,7 +79,14 @@ void GLWidget::initializeGL()
     initializeResources();
 
     // Start the drawing timer
-    m_timer.start(1000.0f / MAX_FPS);
+    m_drawTimer.start(1000.0f / MAX_FPS);
+
+    // Start the simulation timer
+    m_simTimer.start(1.0f); // 1 tick = ~1ms
+}
+
+void GLWidget::doSimTick() {
+    m_scene->doTick();
 }
 
 /**
@@ -96,7 +105,7 @@ void GLWidget::initializeResources()
 
     Planet planet;
     planet.setDetail(LOW);
-    planet.setCenter(Vector3(1, 1, 1));
+    planet.setOrbit(Orbit());
     planet.setAxis(Vector3(-.4, 1, 0));
     planet.setAxialRotation(0);
     planet.setTexture("/course/cs123/data/image/terrain/grass.JPG", 0);
@@ -107,8 +116,8 @@ void GLWidget::initializeResources()
 
     Planet planet2;
     planet2.setDetail(LOW);
+    planet2.setOrbit(Orbit(5, 1.5, 5, 1/30000.0));
     planet2.setRadius(1.5);
-    planet2.setCenter(Vector3(-2, 0, 0));
     planet2.setAxis(Vector3(.4, 1, 0));
     planet2.setAxialRotation(0);
     planet2.setTexture("/course/cs123/data/image/terrain/grass.JPG", 0);
@@ -135,12 +144,12 @@ void GLWidget::initializeResources()
 void GLWidget::loadCubeMap()
 {
     QList<QFile *> fileList;
-    fileList.append(new QFile("../CS123-Final-Project/textures/blank/posx.jpg"));
-    fileList.append(new QFile("../CS123-Final-Project/textures/blank/negx.jpg"));
-    fileList.append(new QFile("../CS123-Final-Project/textures/blank/posy.jpg"));
-    fileList.append(new QFile("../CS123-Final-Project/textures/blank/negy.jpg"));
-    fileList.append(new QFile("../CS123-Final-Project/textures/blank/posz.jpg"));
-    fileList.append(new QFile("../CS123-Final-Project/textures/blank/negz.jpg"));
+    fileList.append(new QFile("../CS123-Final-Project/textures/space/posx.jpg"));
+    fileList.append(new QFile("../CS123-Final-Project/textures/space/negx.jpg"));
+    fileList.append(new QFile("../CS123-Final-Project/textures/space/posy.jpg"));
+    fileList.append(new QFile("../CS123-Final-Project/textures/space/negy.jpg"));
+    fileList.append(new QFile("../CS123-Final-Project/textures/space/posz.jpg"));
+    fileList.append(new QFile("../CS123-Final-Project/textures/space/negz.jpg"));
     m_cubeMap = ResourceLoader::loadCubeMap(fileList);
 }
 
@@ -310,8 +319,6 @@ void GLWidget::renderScene() {
 
     m_scene->render(m_shaderPrograms["terrain"]);
     m_shaderPrograms["terrain"]->release();
-
-    m_scene->doTick();
 
     // Disable culling, depth testing and cube maps
     glDisable(GL_CULL_FACE);

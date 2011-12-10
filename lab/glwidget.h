@@ -25,6 +25,8 @@ public:
     GLWidget(QWidget *parent = 0);
     ~GLWidget();
 
+public slots:
+    void doSimTick(); // called by the simulation timer every tick
 protected:
     // Overridden QGLWidget methods
     void initializeGL();
@@ -50,7 +52,8 @@ protected:
     void paintText();
 
 private:
-    QTimer m_timer;
+    QTimer m_drawTimer;
+    QTimer m_simTimer; // produces ticks for the sim loop
     QTime m_clock;
     int m_prevTime;
     float m_prevFps, m_fps;

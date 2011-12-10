@@ -43,6 +43,7 @@ Planet::Planet(Vector3 center, Vector3 axis, float radius) {
     m_renderDetail = MEDIUM; // set default mesh level
     m_radius = radius;
     m_center = center;
+    m_orbit = Orbit(0, 0, 0, 0);
     m_axis = axis;
     m_axialRotation = 0;
 
@@ -50,7 +51,10 @@ Planet::Planet(Vector3 center, Vector3 axis, float radius) {
     m_octaveCount = 5;
 }
 
-Planet::~Planet() {
+Planet::~Planet() {}
+
+void Planet::updatePosition(float t) {
+    m_center = m_orbit.getPositionAtTime(t);
 }
 
 void Planet::setTexture(const char *filename, int i) {
