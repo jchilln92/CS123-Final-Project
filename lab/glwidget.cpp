@@ -487,7 +487,7 @@ void GLWidget::keyPressEvent(QKeyEvent *event)
  **/
 void GLWidget::paintText()
 {
-    glColor3f(0.f, 0.f, 0.f);
+    glColor3f(1.f, 1.f, 1.f);
 
     // Combine the previous and current framerate
     if (m_fps >= 0 && m_fps < 1000)
