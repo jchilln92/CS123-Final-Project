@@ -19,6 +19,9 @@ Sphere* Planet::m_vh_sphere = NULL;
 void Planet::initStaticResources() {
     if (staticInitialized) return;
 
+    // initialize random generator
+    srand(time(NULL));
+
     // precalculate spheres at different mesh levels
     m_vl_sphere = new Sphere(PARAM_VERY_LOW, PARAM_VERY_LOW);
     m_vl_sphere->calculateGeometry();
@@ -42,6 +45,9 @@ Planet::Planet(Vector3 center, Vector3 axis, float radius) {
     m_center = center;
     m_axis = axis;
     m_axialRotation = 0;
+
+    m_seed = rand();
+    m_octaveCount = 4;
 }
 
 Planet::~Planet() {
@@ -96,6 +102,7 @@ void Planet::render() {
         m_h_sphere->render();
         break;
     case VERY_HIGH:
+        std::cout << "very high" << std::endl;
         m_vh_sphere->render();
         break;
     }

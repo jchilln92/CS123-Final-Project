@@ -16,6 +16,7 @@ public:
     virtual ~Planet();
 
     void setDetail(MeshDetail detail);
+    MeshDetail getDetail() { return m_renderDetail; }
     void render();
 
     void setTexture(const char *filename, int i);
@@ -29,12 +30,17 @@ public:
     void setCenter(Vector3 center) { m_center = center; }
     void setAxis(Vector3 axis) { m_axis = axis; m_axis.normalize(); }
     void setAxialRotation(float radians) { m_axialRotation = fmod(radians, M_2PI); }
+
+    int getSeed() { return m_seed; }
+    int getOctaveCount() { return m_octaveCount; }
 private:
     Vector3 m_center;
     Vector3 m_axis;
     float m_axialRotation;
     float m_radius;
     MeshDetail m_renderDetail;
+    int m_seed;
+    int m_octaveCount;
 
     GLuint textures[MAX_PLANET_TEXTURES];
 

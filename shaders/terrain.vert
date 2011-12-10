@@ -158,9 +158,9 @@ void main() {
     height = global_amp_scale * perlinNoise(gl_Vertex.xyz, planet_seed, noise_octaves);
     vec3 perturbedVertex = gl_Vertex.xyz + height * gl_Normal;
     gl_Position = gl_ModelViewProjectionMatrix * vec4(perturbedVertex, 1);
-
     vec3 normal = normalize(gl_NormalMatrix * perturbedNormal(gl_Vertex, gl_Normal, height, planet_seed, noise_octaves)).xyz;
-    vec3 light = normalize(gl_LightSource[0].position - (gl_ModelViewMatrix * gl_Vertex)).xyz;
+    vec3 light = normalize(gl_LightSource[0].position -
+                           gl_ModelViewMatrix * vec4(perturbedVertex, 1)).xyz;
     intensity = max(0.0, dot(normal, light));
 
     gl_TexCoord[0] = gl_MultiTexCoord0;

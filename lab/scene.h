@@ -3,6 +3,8 @@
 
 #include <vector>
 #include "geom/Planet.h"
+class QGLShaderProgram;
+class Camera;
 
 class Scene {
 public:
@@ -12,8 +14,11 @@ public:
     void addBody(Planet& body);
     std::vector<Planet>& getBodies();
 
-    void render();
+    void updateBodyDetails(Camera *cam);
+    void render(QGLShaderProgram *shader);
+    void doTick();
 private:
+    int m_time; // the scene time, in ticks
     std::vector<Planet> m_bodies;
 };
 
