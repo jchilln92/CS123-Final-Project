@@ -11,6 +11,7 @@
 #include "glm.h"
 
 #include "geom/Planet.h"
+#include "lab/scene.h"
 #include "noise/PerlinNoise.h"
 
 using std::cout;
@@ -34,6 +35,8 @@ GLWidget::GLWidget(QWidget *parent) : QGLWidget(parent),
     setMouseTracking(true);
 
     connect(&m_timer, SIGNAL(timeout()), this, SLOT(update()));
+
+    m_scene = new Scene();
 }
 
 /**
@@ -48,7 +51,7 @@ GLWidget::~GLWidget()
     glDeleteLists(m_skybox, 1);
     const_cast<QGLContext *>(context())->deleteTexture(m_cubeMap);
 
-    delete m_planet;
+    delete m_scene;
 }
 
 /**
@@ -67,9 +70,6 @@ void GLWidget::initializeGL()
 
     glEnable(GL_LIGHTING);
     glShadeModel(GL_SMOOTH);
-
-    //glDisable(GL_LIGHTING);
-    //glShadeModel(GL_FLAT);
 
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
@@ -94,12 +94,28 @@ void GLWidget::initializeResources()
     m_skybox = ResourceLoader::loadSkybox();
     cout << "Loaded skybox..." << endl;
 
-    m_planet = new Planet();
-    m_planet->setDetail(LOW);
-    m_planet->setTexture("/course/cs123/data/image/terrain/grass.JPG", 0);
-    m_planet->setTexture("/course/cs123/data/image/terrain/dirt.JPG", 1);
-    m_planet->setTexture("/course/cs123/data/image/terrain/snow.JPG", 2);
-    m_planet->setTexture("/course/cs123/data/image/terrain/rock.JPG", 3);
+    Planet planet;
+    planet.setDetail(LOW);
+    planet.setCenter(Vector3(1, 1, 1));
+    planet.setAxis(Vector3(-.4, 1, 0));
+    planet.setAxialRotation(0);
+    planet.setTexture("/course/cs123/data/image/terrain/grass.JPG", 0);
+    planet.setTexture("/course/cs123/data/image/terrain/dirt.JPG", 1);
+    planet.setTexture("/course/cs123/data/image/terrain/snow.JPG", 2);
+    planet.setTexture("/course/cs123/data/image/terrain/rock.JPG", 3);
+    m_scene->addBody(planet);
+
+    Planet planet2;
+    planet2.setDetail(LOW);
+    planet2.setRadius(1.5);
+    planet2.setCenter(Vector3(-2, 0, 0));
+    planet2.setAxis(Vector3(.4, 1, 0));
+    planet2.setAxialRotation(0);
+    planet2.setTexture("/course/cs123/data/image/terrain/grass.JPG", 0);
+    planet2.setTexture("/course/cs123/data/image/terrain/dirt.JPG", 1);
+    planet2.setTexture("/course/cs123/data/image/terrain/snow.JPG", 2);
+    planet2.setTexture("/course/cs123/data/image/terrain/rock.JPG", 3);
+    m_scene->addBody(planet2);
 
     loadCubeMap();
     cout << "Loaded cube map..." << endl;
@@ -243,7 +259,7 @@ void GLWidget::paintGL()
         // Render the blurred brightpass filter result to fbo 1
         renderBlur(width / scales[i], height / scales[i]);
 
-        // Bind the image from fbo to a texture
+        // Bind the image from fbo to a textuabout:re
         glBindTexture(GL_TEXTURE_2D, m_framebufferObjects["fbo_1"]->texture());
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -282,21 +298,6 @@ void GLWidget::renderScene() {
     glPolygonMode(GL_FRONT, GL_FILL);
     m_shaderPrograms["terrain"]->bind();
 
-    // load textures
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, m_planet->getTexture(0));
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, m_planet->getTexture(1));
-    glActiveTexture(GL_TEXTURE2);
-    glBindTexture(GL_TEXTURE_2D, m_planet->getTexture(2));
-    glActiveTexture(GL_TEXTURE3);
-    glBindTexture(GL_TEXTURE_2D, m_planet->getTexture(3));
-    glActiveTexture(GL_TEXTURE0); // make renderText work again
-    m_shaderPrograms["terrain"]->setUniformValue("tex1", (GLuint)0);
-    m_shaderPrograms["terrain"]->setUniformValue("tex2", (GLuint)1);
-    m_shaderPrograms["terrain"]->setUniformValue("tex3", (GLuint)2);
-    m_shaderPrograms["terrain"]->setUniformValue("tex4", (GLuint)3);
-
     // load data about how the textures are to be mapped
     m_shaderPrograms["terrain"]->setUniformValue("tex1_min", (GLfloat)-0.02);
     m_shaderPrograms["terrain"]->setUniformValue("tex1_max", (GLfloat)0);
@@ -307,14 +308,10 @@ void GLWidget::renderScene() {
     m_shaderPrograms["terrain"]->setUniformValue("tex4_min", (GLfloat)-0.1);
     m_shaderPrograms["terrain"]->setUniformValue("tex4_max", (GLfloat)-0.02);
 
-    // load in other uniforms
-    m_shaderPrograms["terrain"]->setUniformValue("global_amp_scale",(GLfloat)0.05);
-    m_shaderPrograms["terrain"]->setUniformValue("global_pos_scale",(GLfloat)2.0);
-    m_shaderPrograms["terrain"]->setUniformValue("planet_seed",(GLuint)98738);
-    m_shaderPrograms["terrain"]->setUniformValue("noise_octaves",(GLuint)3);
-
-    m_planet->render();
+    m_scene->render(m_shaderPrograms["terrain"]);
     m_shaderPrograms["terrain"]->release();
+
+    m_scene->doTick();
 
     // Disable culling, depth testing and cube maps
     glDisable(GL_CULL_FACE);
@@ -374,27 +371,9 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
 **/
 void GLWidget::wheelEvent(QWheelEvent *event)
 {
-    if (event->orientation() == Qt::Vertical)
-    {
-        // compute distance between eye point and planet
-        Vector3 eye_to_planet = m_planet->getCenter() - m_camera.getEye();
-        float dist = eye_to_planet.length();
-
-        if (dist > m_planet->getRadius() + .25 || event->delta() < 0) {
-            m_camera.mouseWheel(event->delta());
-
-            if (dist >= 0 && dist < .9) {
-                m_planet->setDetail(VERY_HIGH);
-            } else if (dist >= .9 && dist < 1.5) {
-                m_planet->setDetail(HIGH);
-            } else if (dist >= 1.5 && dist < 2.5) {
-                m_planet->setDetail(MEDIUM);
-            } else if (dist >= 2.5 && dist < 4) {
-                m_planet->setDetail(LOW);
-            } else {
-                m_planet->setDetail(VERY_LOW);
-            }
-        }
+    if (event->orientation() == Qt::Vertical) {
+        m_camera.mouseWheel(event->delta());
+        m_scene->updateBodyDetails(&m_camera); // recalculate level of detail for planets
     }
 }
 
