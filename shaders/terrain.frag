@@ -11,6 +11,8 @@ uniform float tex4_min, tex4_max;
 varying float height;
 varying float intensity;
 
+varying float depth;
+
 vec4 sampleTextures() {
     float tex1_rng = tex1_max-tex1_min;
     float tex1_w = max(0.0,(tex1_rng-abs(height-tex1_max))/tex1_rng);
@@ -34,5 +36,6 @@ vec4 sampleTextures() {
 }
 
 void main() {
-    gl_FragColor = sampleTextures() * intensity;
+    // gl_FragColor = vec4((sampleTextures() * intensity).rgb,depth);
+    gl_FragColor = vec4(depth,depth,depth,1);
 }

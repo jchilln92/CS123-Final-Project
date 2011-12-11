@@ -45,6 +45,7 @@ protected:
     void createBlurKernel(int radius, int width, int height, GLfloat* kernel, GLfloat* offsets);
 
     // Drawing code
+    void applyOrthogonalCamera(float width, float height);
     void applyPerspectiveCamera(float width, float height);
     void renderTexturedQuad(int width, int height, bool flip);
     void renderBlur(int width, int height);

@@ -9,6 +9,7 @@ uniform int noise_octaves;
 
 varying float intensity;
 varying float height;
+varying float depth;
 
 vec3 roty(vec3 v, float angle) {
     return mat3(cos(angle),0.0,-sin(angle),0.0,1.0,0.0,sin(angle),0.0,cos(angle))*v;
@@ -162,6 +163,9 @@ void main() {
     vec3 light = normalize(gl_LightSource[0].position -
                            gl_ModelViewMatrix * vec4(perturbedVertex, 1)).xyz;
     intensity = max(0.0, dot(normal, light));
+
+    depth = max(1.0-abs(gl_Position.z-10.0)/10.0,0.0);
+    depth *= depth;
 
     gl_TexCoord[0] = gl_MultiTexCoord0;
 }

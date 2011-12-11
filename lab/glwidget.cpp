@@ -204,6 +204,22 @@ void GLWidget::createFramebufferObjects(int width, int height)
 }
 
 /**
+  Called to switch to an orthogonal OpenGL camera.
+  Useful for rending a textured quad across the whole screen.
+
+  @param width: the viewport width
+  @param height: the viewport height
+**/
+void GLWidget::applyOrthogonalCamera(float width, float height)
+{
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(0, width, height, 0.f, -1.f, 1.f);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+}
+
+/**
   Called to switch to a perspective OpenGL camera.
 
   @param width: the viewport width
@@ -238,14 +254,15 @@ void GLWidget::paintGL()
     int height = this->height();
 
     // draw scene
-    applyPerspectiveCamera(width, height);
-    renderScene();
-    paintText();
+    // applyPerspectiveCamera(width, height);
+    // renderScene();
+    // paintText();
+
 
     //---------------------------------
     // Old Framebuffer code, might be useful later
 
-    /*// Render the scene to a framebuffer
+    // Render the scene to a framebuffer
     m_framebufferObjects["fbo_0"]->bind();
     applyPerspectiveCamera(width, height);
     renderScene();
@@ -258,11 +275,13 @@ void GLWidget::paintGL()
                                                    QRect(0, 0, width, height), GL_COLOR_BUFFER_BIT, GL_NEAREST);
 
     // TODO: Add drawing code here
+    glDisable(GL_LIGHTING);
     applyOrthogonalCamera(width, height);
-    glBindTexture(GL_TEXTURE_2D, m_framebufferObjects["fbo_1"]->texture());
+    glBindTexture(GL_TEXTURE_2D, m_framebufferObjects["fbo_0"]->texture());
     renderTexturedQuad(width, height, true);
     glBindTexture(GL_TEXTURE_2D, 0);
-
+    glEnable(GL_LIGHTING);
+    /*
     m_framebufferObjects["fbo_2"]->bind();
     m_shaderPrograms["brightpass"]->bind();
     glBindTexture(GL_TEXTURE_2D, m_framebufferObjects["fbo_1"]->texture());
@@ -279,7 +298,7 @@ void GLWidget::paintGL()
         // Render the blurred brightpass filter result to fbo 1
         renderBlur(width / scales[i], height / scales[i]);
 
-        // Bind the image from fbo to a textuabout:re
+        // Bind the image from fbo to a texture
         glBindTexture(GL_TEXTURE_2D, m_framebufferObjects["fbo_1"]->texture());
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -292,8 +311,9 @@ void GLWidget::paintGL()
         glDisable(GL_BLEND);
         glBindTexture(GL_TEXTURE_2D, 0);
     }
+    */
+    // paintText();
 
-    paintText();*/
 }
 
 /**
