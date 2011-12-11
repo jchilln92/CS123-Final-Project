@@ -15,7 +15,7 @@ public:
     std::vector<Planet>& getBodies();
 
     void updateBodyDetails(Camera *cam);
-    void render(QGLShaderProgram *shader);
+    void render();
     void doTick();
 private:
     int m_time; // the scene time, in ticks

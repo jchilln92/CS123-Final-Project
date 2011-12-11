@@ -15,9 +15,18 @@ Sphere* Planet::m_l_sphere = NULL;
 Sphere* Planet::m_m_sphere = NULL;
 Sphere* Planet::m_h_sphere = NULL;
 Sphere* Planet::m_vh_sphere = NULL;
+QGLShaderProgram* Planet::m_planetShader = NULL;
+QGLShaderProgram* Planet::m_starShader = NULL;
 
 void Planet::initStaticResources() {
     if (staticInitialized) return;
+
+    // load shader programs for planets and stars
+    const QGLContext *ctx = QGLContext::currentContext();
+    m_planetShader = ResourceLoader::newShaderProgram(ctx, "../CS123-Final-Project/shaders/terrain.vert",
+                                                           "../CS123-Final-Project/shaders/terrain.frag");
+    m_starShader = ResourceLoader::newShaderProgram(ctx, "../CS123-Final-Project/shaders/star.vert",
+                                                         "../CS123-Final-Project/shaders/star.frag");
 
     // initialize random generator
     srand(time(NULL));
@@ -46,6 +55,7 @@ Planet::Planet(Vector3 center, Vector3 axis, float radius) {
     m_orbit = Orbit(0, 0, 0, 0);
     m_axis = axis;
     m_axialRotation = 0;
+    m_isStar = false;
 
     m_seed = rand();
     m_octaveCount = 3;
@@ -92,6 +102,45 @@ void Planet::render() {
     float scale = m_radius / .5;
     glScalef(scale, scale, scale);
 
+    if (!m_isStar) {
+        m_planetShader->bind();
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, getTexture(0));
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, getTexture(1));
+        glActiveTexture(GL_TEXTURE2);
+        glBindTexture(GL_TEXTURE_2D, getTexture(2));
+        glActiveTexture(GL_TEXTURE3);
+        glBindTexture(GL_TEXTURE_2D, getTexture(3));
+        m_planetShader->setUniformValue("tex1", (GLuint)0);
+        m_planetShader->setUniformValue("tex2", (GLuint)1);
+        m_planetShader->setUniformValue("tex3", (GLuint)2);
+        m_planetShader->setUniformValue("tex4", (GLuint)3);
+
+        // load in other uniforms
+        m_planetShader->setUniformValue("global_amp_scale",(GLfloat)0.05);
+        m_planetShader->setUniformValue("global_pos_scale",(GLfloat)2.0);
+        m_planetShader->setUniformValue("planet_seed",(GLuint)getSeed());
+        m_planetShader->setUniformValue("noise_octaves",(GLuint)getOctaveCount());
+
+        // load data about how the textures are to be mapped for the planet shader
+        m_planetShader->setUniformValue("tex1_min", (GLfloat)-0.02);
+        m_planetShader->setUniformValue("tex1_max", (GLfloat)0);
+        m_planetShader->setUniformValue("tex2_min", (GLfloat)0);
+        m_planetShader->setUniformValue("tex2_max", (GLfloat)0.02);
+        m_planetShader->setUniformValue("tex3_min", (GLfloat)0.02);
+        m_planetShader->setUniformValue("tex3_max", (GLfloat)0.1);
+        m_planetShader->setUniformValue("tex4_min", (GLfloat)-0.1);
+        m_planetShader->setUniformValue("tex4_max", (GLfloat)-0.02);
+    } else {
+        m_starShader->bind();
+
+        // the sun texture is just the first texture for the planet
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, getTexture(0));
+        m_starShader->setUniformValue("sunTex", (GLuint)0);
+    }
+
     switch (m_renderDetail) {
     case VERY_LOW:
         m_vl_sphere->render();
@@ -108,6 +157,12 @@ void Planet::render() {
     case VERY_HIGH:
         m_vh_sphere->render();
         break;
+    }
+
+    if (!m_isStar) {
+        m_planetShader->release();
+    } else {
+        m_starShader->release();
     }
 
     glPopMatrix();
