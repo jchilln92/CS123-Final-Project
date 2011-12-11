@@ -54,7 +54,7 @@ void Scene::updateBodyDetails(Camera *cam) {
 void Scene::render(QGLShaderProgram *shader) {
     // set up a test light
     glEnable(GL_LIGHT0);
-    GLfloat light_pos[] = {0.0, 0.0, 10.0, 1.0};
+    GLfloat light_pos[] = {0.0, 0.0, 0.0, 1.0};
     glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
 
     for (unsigned int i = 0; i < m_bodies.size(); i++) {

@@ -103,9 +103,20 @@ void GLWidget::initializeResources()
     m_skybox = ResourceLoader::loadSkybox();
     cout << "Loaded skybox..." << endl;
 
+    /*
+    Planet sun;
+    sun.setDetail(LOW);
+    sun.setRadius(4);
+    sun.setTexture("../CS123-Final-Project/textures/sun.jpg", 0);
+    sun.setTexture("../CS123-Final-Project/textures/sun.jpg", 1);
+    sun.setTexture("../CS123-Final-Project/textures/sun.jpg", 2);
+    sun.setTexture("../CS123-Final-Project/textures/sun.jpg", 3);
+    m_scene->addBody(sun);
+    */
+
     Planet planet;
     planet.setDetail(LOW);
-    planet.setOrbit(Orbit());
+    planet.setOrbit(Orbit(10, 0, 10, 1/100000.0));
     planet.setAxis(Vector3(-.4, 1, 0));
     planet.setAxialRotation(0);
     planet.setTexture("/course/cs123/data/image/terrain/grass.JPG", 0);
@@ -116,8 +127,8 @@ void GLWidget::initializeResources()
 
     Planet planet2;
     planet2.setDetail(LOW);
-    planet2.setOrbit(Orbit(5, 1.5, 5, 1/30000.0));
-    planet2.setRadius(1.5);
+    planet2.setOrbit(Orbit(6, 1.5, 6, 1/30000.0));
+    planet2.setRadius(1.2);
     planet2.setAxis(Vector3(.4, 1, 0));
     planet2.setAxialRotation(0);
     planet2.setTexture("/course/cs123/data/image/terrain/grass.JPG", 0);

@@ -48,7 +48,7 @@ Planet::Planet(Vector3 center, Vector3 axis, float radius) {
     m_axialRotation = 0;
 
     m_seed = rand();
-    m_octaveCount = 5;
+    m_octaveCount = 3;
 }
 
 Planet::~Planet() {}
