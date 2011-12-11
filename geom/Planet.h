@@ -4,6 +4,7 @@
 #include "math/vector.h"
 #include "MeshDetail.h"
 #include <qgl.h>
+#include <QGLShaderProgram>
 #include "Orbit.h"
 class Sphere;
 
@@ -30,6 +31,7 @@ public:
     float getRadius() { return m_radius; }
     float getAxialRotation() { return m_axialRotation; }
     float getAxialPeriod() { return 18000.0 * m_radius; }
+    void setIsStar(bool s) { m_isStar = s; }
     void setRadius(float radius) { m_radius = radius; }
     void setOrbit(Orbit orbit) { m_orbit = orbit; }
     void setAxis(Vector3 axis) { m_axis = axis; m_axis.normalize(); }
@@ -38,6 +40,7 @@ public:
     int getSeed() { return m_seed; }
     int getOctaveCount() { return m_octaveCount; }
 private:
+    bool m_isStar;
     Orbit m_orbit;
     Vector3 m_center;
 
@@ -59,6 +62,10 @@ private:
     static Sphere *m_m_sphere;
     static Sphere *m_h_sphere;
     static Sphere *m_vh_sphere;
+
+    // shader programs for planets and stars
+    static QGLShaderProgram *m_planetShader;
+    static QGLShaderProgram *m_starShader;
 };
 
 #endif // PLANET_H

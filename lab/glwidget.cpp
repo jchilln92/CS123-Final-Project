@@ -103,16 +103,12 @@ void GLWidget::initializeResources()
     m_skybox = ResourceLoader::loadSkybox();
     cout << "Loaded skybox..." << endl;
 
-    /*
     Planet sun;
     sun.setDetail(LOW);
     sun.setRadius(4);
-    sun.setTexture("../CS123-Final-Project/textures/sun.jpg", 0);
-    sun.setTexture("../CS123-Final-Project/textures/sun.jpg", 1);
-    sun.setTexture("../CS123-Final-Project/textures/sun.jpg", 2);
-    sun.setTexture("../CS123-Final-Project/textures/sun.jpg", 3);
+    sun.setTexture("../CS123-Final-Project/textures/SunTexture.png", 0);
+    sun.setIsStar(true);
     m_scene->addBody(sun);
-    */
 
     Planet planet;
     planet.setDetail(LOW);
@@ -170,8 +166,6 @@ void GLWidget::loadCubeMap()
 void GLWidget::createShaderPrograms()
 {
     const QGLContext *ctx = context();
-    m_shaderPrograms["terrain"] = ResourceLoader::newShaderProgram(ctx, "../CS123-Final-Project/shaders/terrain.vert",
-                                                                   "../CS123-Final-Project/shaders/terrain.frag");
 
     // old
     m_shaderPrograms["reflect"] = ResourceLoader::newShaderProgram(ctx, "../CS123-Final-Project/shaders/reflect.vert",
@@ -336,20 +330,9 @@ void GLWidget::renderScene() {
     glEnable(GL_CULL_FACE);
 
     glPolygonMode(GL_FRONT, GL_FILL);
-    m_shaderPrograms["terrain"]->bind();
 
-    // load data about how the textures are to be mapped
-    m_shaderPrograms["terrain"]->setUniformValue("tex1_min", (GLfloat)-0.02);
-    m_shaderPrograms["terrain"]->setUniformValue("tex1_max", (GLfloat)0);
-    m_shaderPrograms["terrain"]->setUniformValue("tex2_min", (GLfloat)0);
-    m_shaderPrograms["terrain"]->setUniformValue("tex2_max", (GLfloat)0.02);
-    m_shaderPrograms["terrain"]->setUniformValue("tex3_min", (GLfloat)0.02);
-    m_shaderPrograms["terrain"]->setUniformValue("tex3_max", (GLfloat)0.1);
-    m_shaderPrograms["terrain"]->setUniformValue("tex4_min", (GLfloat)-0.1);
-    m_shaderPrograms["terrain"]->setUniformValue("tex4_max", (GLfloat)-0.02);
-
-    m_scene->render(m_shaderPrograms["terrain"]);
-    m_shaderPrograms["terrain"]->release();
+    // draw the scene
+    m_scene->render();
 
     // Disable culling, depth testing and cube maps
     glDisable(GL_CULL_FACE);

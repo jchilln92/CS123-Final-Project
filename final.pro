@@ -50,5 +50,7 @@ OTHER_FILES += shaders/refract.vert \
     shaders/brightpass.frag \
     shaders/blur.frag \
     shaders/terrain.vert \
-    shaders/terrain.frag
+    shaders/terrain.frag \
+    shaders/star.vert \
+    shaders/star.frag
 RESOURCES += 

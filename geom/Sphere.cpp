@@ -93,7 +93,7 @@ void Sphere::calculateGeometry() {
         for (p_step = 1; p_step < m_parameter1; p_step++) { // exclude top and bottom vertices
             theta = t_step * d_theta;
             if (t_step == m_parameter2)
-                theta -= d_theta / 1000.0;
+                theta -= d_theta / 100000.0;
 
             phi = p_step * d_phi;
 
