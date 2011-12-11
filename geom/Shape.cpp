@@ -1,4 +1,5 @@
 #include "Shape.h"
+#include <iostream>
 #include <qgl.h>
 
 Shape::Shape(int param1, int param2, float param3) {
@@ -84,6 +85,8 @@ void Shape::setVertex(int v_idx, float x, float y, float z) {
 
     float u, v;
     computeTextureCoordinates(&m_vertices[v_idx * 4], &u, &v);
+    //std::cout << m_vertices[v_idx * 4] << ", " << m_vertices[v_idx * 4 + 1] << ", " << m_vertices[v_idx * 4 + 2] << std::endl;
+    //std::cout << u << ", " << v << std::endl;
     m_textureCoordinates[v_idx * 2 + 0] = u;
     m_textureCoordinates[v_idx * 2 + 1] = v;
 }

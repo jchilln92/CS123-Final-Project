@@ -10,11 +10,13 @@ Sphere::Sphere(int param1, int param2) : Shape(param1, param2, 0) {
 Sphere::~Sphere() {}
 
 int Sphere::getTriangleCount() {
-    return (m_parameter1 - 1) * 2 * m_parameter2;
+    //return (m_parameter1 - 1) * 2 * m_parameter2;
+    return (m_parameter1 - 1) * 2 * (m_parameter2+1);
 }
 
 int Sphere::getVertexCount() {
-    return 2 + (m_parameter1 - 1) * m_parameter2;
+    //return 2 + (m_parameter1 - 1) * m_parameter2;
+    return 2 + (m_parameter1 - 1) * (m_parameter2+1);
 }
 
 void Sphere::render() {
@@ -59,6 +61,8 @@ void Sphere::computeTextureCoordinates(float *vertex, float *u, float *v) {
     float p = asin(vertex[1] / .5);
     *v = p / M_PI + .5;
 
+    if (fabs(*v) < 1e-6) *v = 0;
+
     if (*v == 0 || *v == 1) {
         *u = .5;
     }
@@ -85,9 +89,12 @@ void Sphere::calculateGeometry() {
     v_idx++;
 
     // build all other vertices
-    for (t_step = 0; t_step < m_parameter2; t_step++) {
+    for (t_step = 0; t_step < m_parameter2 + 1; t_step++) {
         for (p_step = 1; p_step < m_parameter1; p_step++) { // exclude top and bottom vertices
             theta = t_step * d_theta;
+            if (t_step == m_parameter2)
+                theta -= d_theta / 1000.0;
+
             phi = p_step * d_phi;
 
             float x = r * sin(phi) * cos(theta);
@@ -96,11 +103,11 @@ void Sphere::calculateGeometry() {
 
             Shape::setVertex(v_idx, x, y, z);
             Shape::setVertexNormal(v_idx, x/r, y/r, z/r);
-            v_idx++;;
+            v_idx++;
         }
     }
 
-    for (t_step = 0; t_step < m_parameter2; t_step++) {
+    for (t_step = 0; t_step < m_parameter2 + 1; t_step++) {
         for (p_step = 1; p_step < m_parameter1 - 1; p_step++) {
             v_idx = 2 + (m_parameter1 - 1) * t_step + (p_step - 1);
 
@@ -110,7 +117,7 @@ void Sphere::calculateGeometry() {
             int diag_idx = v_idx + m_parameter1;
 
             // in order to "wrap around" fully, we need this check
-            if (t_step == m_parameter2 - 1) {
+            if (t_step == m_parameter2) {
                 left_idx = 2 + (p_step - 1);
                 diag_idx = 2 + (p_step - 1) + 1;
             }
@@ -122,17 +129,17 @@ void Sphere::calculateGeometry() {
         }
     }
 
-    for (t_step = 0; t_step < m_parameter2; t_step++) {
+    for (t_step = 0; t_step < m_parameter2 + 1; t_step++) {
         // top circle
         v_idx = 2 + (m_parameter1 - 1) * t_step;
-        int left_idx = t_step == m_parameter2 - 1 ? 2 : v_idx + m_parameter1 - 1;
+        int left_idx = t_step == m_parameter2 ? 2 : v_idx + m_parameter1 - 1;
 
         Shape::setTriangle(t_idx, 0, left_idx, v_idx);
         t_idx++;
 
         // bottom circle
         v_idx += m_parameter1 - 2; // move to lowest ring of vertices
-        left_idx = t_step == m_parameter2 - 1 ? m_parameter1 : v_idx + m_parameter1 - 1;
+        left_idx = t_step == m_parameter2 ? m_parameter1 : v_idx + m_parameter1 - 1;
 
         Shape::setTriangle(t_idx, left_idx, 1, v_idx);
         t_idx++;
