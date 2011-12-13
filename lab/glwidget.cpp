@@ -7,6 +7,7 @@
 #include <QMouseEvent>
 #include <QTime>
 #include <QTimer>
+#include <QThread>
 #include <QWheelEvent>
 #include "glm.h"
 
@@ -23,6 +24,14 @@ extern "C"
 }
 
 static const int MAX_FPS = 120;
+
+class SimThread : public QThread {
+public:
+protected:
+    virtual void run() {
+
+    }
+};
 
 /**
   Constructor.  Initialize all member variables here.

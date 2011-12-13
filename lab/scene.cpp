@@ -24,11 +24,8 @@ void Scene::doTick() {
         int axialPeriod = (int)body->getAxialPeriod();
         float arot = (m_time % axialPeriod) / (float)axialPeriod;
         arot *= M_2PI;
-        int orbitalPeriod = (int)body->getOrbitalPeriod();
-        float orot = (m_time % orbitalPeriod) / (float)orbitalPeriod;
-        orot *= M_2PI;
         body->setAxialRotation(arot);
-        body->setOrbitalRotation(orot);
+        body->calculateNewOrbitalPosition();
     }
 }
 
