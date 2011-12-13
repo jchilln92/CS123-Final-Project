@@ -55,6 +55,7 @@ private:
     QTimer m_drawTimer;
     QTimer m_simTimer; // produces ticks for the sim loop
     QTime m_clock;
+    int m_prevSimTime;
     int m_prevTime;
     float m_prevFps, m_fps;
     Vector2 m_prevMousePos;

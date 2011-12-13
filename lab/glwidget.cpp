@@ -7,6 +7,7 @@
 #include <QMouseEvent>
 #include <QTime>
 #include <QTimer>
+#include <QThread>
 #include <QWheelEvent>
 #include "glm.h"
 
@@ -23,6 +24,7 @@ extern "C"
 }
 
 static const int MAX_FPS = 120;
+
 
 /**
   Constructor.  Initialize all member variables here.
@@ -82,10 +84,15 @@ void GLWidget::initializeGL()
 
     // Start the simulation timer
     m_simTimer.start(1.0f); // 1 tick = ~1ms
+    m_prevSimTime = m_clock.elapsed();
 }
 
 void GLWidget::doSimTick() {
-    m_scene->doTick();
+    int time = m_clock.elapsed();
+    int timeElapsed = time - m_prevSimTime;
+    int numTicks = timeElapsed;
+    m_prevSimTime = time;
+    m_scene->doTicks(numTicks);
 }
 
 /**
@@ -528,12 +535,21 @@ void GLWidget::keyPressEvent(QKeyEvent *event)
 {
     switch(event->key())
     {
+        case Qt::Key_P:
+            if (m_simTimer.isActive()) {
+                m_simTimer.stop();
+            } else {
+                m_prevSimTime = m_clock.elapsed();
+                m_simTimer.start(1.0f);
+            }
+
+            break;
         case Qt::Key_S:
-        QImage qi = grabFrameBuffer(false);
-        QString filter;
-        QString fileName = QFileDialog::getSaveFileName(this, tr("Save Image"), "", tr("PNG Image (*.png)"), &filter);
-        qi.save(QFileInfo(fileName).absoluteDir().absolutePath() + "/" + QFileInfo(fileName).baseName() + ".png", "PNG", 100);
-        break;
+            QImage qi = grabFrameBuffer(false);
+            QString filter;
+            QString fileName = QFileDialog::getSaveFileName(this, tr("Save Image"), "", tr("PNG Image (*.png)"), &filter);
+            qi.save(QFileInfo(fileName).absoluteDir().absolutePath() + "/" + QFileInfo(fileName).baseName() + ".png", "PNG", 100);
+            break;
     }
 }
 
@@ -554,6 +570,7 @@ void GLWidget::paintText()
     // QGLWidget's renderText takes xy coordinates, a string, and a font
     renderText(10, 20, "FPS: " + QString::number((int) (m_prevFps)), m_font);
     renderText(10, 35, "S: Save screenshot", m_font);
+    renderText(10, 50, "P: Toggle animation", m_font);
 
     glColor3f(1.f, 1.f, 1.f);
 }

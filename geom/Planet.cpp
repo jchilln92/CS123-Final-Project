@@ -64,7 +64,11 @@ Planet::Planet(Vector3 center, Vector3 axis, float radius) {
 Planet::~Planet() {}
 
 void Planet::setOrbitalRotation(float radians) {
-    m_orbitalRotation += M_2PI / getOrbitalPeriod();
+    m_orbitalRotation = radians;
+}
+
+void Planet::calculateNewOrbitalPosition(int numTicks) {
+    m_orbitalRotation += (M_2PI / getOrbitalPeriod()) * numTicks;
     m_center = m_orbit.getPositionAtAngle(fmod(m_orbitalRotation, M_2PI));
 }
 
