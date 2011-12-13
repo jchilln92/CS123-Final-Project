@@ -52,7 +52,7 @@ Planet::Planet(Vector3 center, Vector3 axis, float radius) {
     m_renderDetail = MEDIUM; // set default mesh level
     m_radius = radius;
     m_center = center;
-    m_orbit = Orbit(0, 0, 0, 0);
+    m_orbit = Orbit(0, 0, 0);
     m_axis = axis;
     m_axialRotation = 0;
     m_isStar = false;
@@ -63,8 +63,9 @@ Planet::Planet(Vector3 center, Vector3 axis, float radius) {
 
 Planet::~Planet() {}
 
-void Planet::updatePosition(float t) {
-    m_center = m_orbit.getPositionAtTime(t);
+void Planet::setOrbitalRotation(float radians) {
+    m_orbitalRotation += M_2PI / getOrbitalPeriod();
+    m_center = m_orbit.getPositionAtAngle(fmod(m_orbitalRotation, M_2PI));
 }
 
 void Planet::setTexture(const char *filename, int i) {

@@ -10,7 +10,6 @@
 #include "camera.h"
 #include "vector.h"
 #include "resourceloader.h"
-#include "noise/PerlinNoise.h"
 
 class QGLShaderProgram;
 class QGLFramebufferObject;

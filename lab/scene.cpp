@@ -19,12 +19,16 @@ void Scene::doTick() {
 
     for (unsigned int i = 0; i < m_bodies.size(); i++) {
         Planet *body = &m_bodies.at(i);
+        if (body->getIsStar()) continue;
 
-        int period = (int)body->getAxialPeriod();
-        float rot = (m_time % period) / (float)period;
-        rot *= M_2PI;
-        body->setAxialRotation(rot);
-        body->updatePosition(m_time);
+        int axialPeriod = (int)body->getAxialPeriod();
+        float arot = (m_time % axialPeriod) / (float)axialPeriod;
+        arot *= M_2PI;
+        int orbitalPeriod = (int)body->getOrbitalPeriod();
+        float orot = (m_time % orbitalPeriod) / (float)orbitalPeriod;
+        orot *= M_2PI;
+        body->setAxialRotation(arot);
+        body->setOrbitalRotation(orot);
     }
 }
 

@@ -19,8 +19,6 @@ HEADERS += lab/glwidget.h \
     support/mainwindow.h \
     support/camera.h \
     lib/targa.h \
-    noise/NoiseGenerator.h \
-    noise/PerlinNoise.h \
     geom/Sphere.h \
     geom/Shape.h \
     geom/Planet.h \
@@ -34,8 +32,6 @@ SOURCES += lab/glwidget.cpp \
     support/mainwindow.cpp \
     support/main.cpp \
     support/camera.cpp \
-    noise/NoiseGenerator.cpp \
-    noise/PerlinNoise.cpp \
     geom/Sphere.cpp \
     geom/Shape.cpp \
     geom/Planet.cpp \

@@ -31,11 +31,14 @@ public:
     float getRadius() { return m_radius; }
     float getAxialRotation() { return m_axialRotation; }
     float getAxialPeriod() { return 18000.0 * m_radius; }
+    float getOrbitalPeriod() { return 10000.0 * sqrt(m_center.length()); }
+    bool getIsStar() { return m_isStar; }
     void setIsStar(bool s) { m_isStar = s; }
     void setRadius(float radius) { m_radius = radius; }
-    void setOrbit(Orbit orbit) { m_orbit = orbit; }
+    void setOrbit(Orbit orbit) { m_orbit = orbit; m_center = m_orbit.getPositionAtAngle(0); }
     void setAxis(Vector3 axis) { m_axis = axis; m_axis.normalize(); }
     void setAxialRotation(float radians) { m_axialRotation = fmod(radians, M_2PI); }
+    void setOrbitalRotation(float radians);
 
     int getSeed() { return m_seed; }
     int getOctaveCount() { return m_octaveCount; }
@@ -46,6 +49,7 @@ private:
 
     Vector3 m_axis;
     float m_axialRotation;
+    float m_orbitalRotation;
 
     float m_radius;
     MeshDetail m_renderDetail;

@@ -13,7 +13,6 @@
 #include "geom/Planet.h"
 #include "geom/Orbit.h"
 #include "lab/scene.h"
-#include "noise/PerlinNoise.h"
 
 using std::cout;
 using std::endl;
@@ -112,7 +111,8 @@ void GLWidget::initializeResources()
 
     Planet planet;
     planet.setDetail(LOW);
-    planet.setOrbit(Orbit(10, 0, 10, 1/100000.0));
+    planet.setOrbit(Orbit(10, 0, 10));
+    planet.setRadius(1.2);
     planet.setAxis(Vector3(-.4, 1, 0));
     planet.setAxialRotation(0);
     planet.setTexture("/course/cs123/data/image/terrain/grass.JPG", 0);
@@ -123,8 +123,7 @@ void GLWidget::initializeResources()
 
     Planet planet2;
     planet2.setDetail(LOW);
-    planet2.setOrbit(Orbit(6, 1.5, 6, 1/30000.0));
-    planet2.setRadius(1.2);
+    planet2.setOrbit(Orbit(8, M_PI/2.0, 10));
     planet2.setAxis(Vector3(.4, 1, 0));
     planet2.setAxialRotation(0);
     planet2.setTexture("/course/cs123/data/image/terrain/grass.JPG", 0);
@@ -251,9 +250,9 @@ void GLWidget::paintGL()
     int height = this->height();
 
     // draw scene
-    // applyPerspectiveCamera(width, height);
-    // renderScene();
-    // paintText();
+    //applyPerspectiveCamera(width, height);
+    //renderScene();
+    //paintText();
 
 
 
@@ -261,14 +260,14 @@ void GLWidget::paintGL()
     // Old Framebuffer code, might be useful later
 
     // Render the scene to a framebuffer
-    glEnable(GL_BLEND);
+    //glEnable(GL_BLEND);
     // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glBlendFunc(GL_ONE, GL_ONE);
+    //glBlendFunc(GL_ONE, GL_ONE);
     m_framebufferObjects["fbo_0"]->bind();
     applyPerspectiveCamera(width, height);
     renderScene();
     m_framebufferObjects["fbo_0"]->release();
-    glDisable(GL_BLEND);
+    //glDisable(GL_BLEND);
 
     // Copy the rendered scene into framebuffer 1
 
@@ -279,12 +278,12 @@ void GLWidget::paintGL()
     glDisable(GL_LIGHTING);
     applyOrthogonalCamera(width, height);
     glBindTexture(GL_TEXTURE_2D, m_framebufferObjects["fbo_0"]->texture());
-    // renderTexturedQuad(width, height, true);
+    renderTexturedQuad(width, height, true);
     glBindTexture(GL_TEXTURE_2D, 0);
 
-    glEnable(GL_BLEND);
+    //glEnable(GL_BLEND);
 
-    m_framebufferObjects["fbo_1"]->bind();
+    /*m_framebufferObjects["fbo_1"]->bind();
     glClearColor(0.0,0.0,0.0,0.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     m_shaderPrograms["dof"]->bind();
@@ -295,11 +294,11 @@ void GLWidget::paintGL()
     glBindTexture(GL_TEXTURE_2D, 0);
     m_shaderPrograms["dof"]->release();
     m_framebufferObjects["fbo_1"]->release();
-    glDisable(GL_BLEND);
+    glDisable(GL_BLEND);*/
 
-    glBindTexture(GL_TEXTURE_2D, m_framebufferObjects["fbo_1"]->texture());
-    renderTexturedQuad(width, height, true);
-    glBindTexture(GL_TEXTURE_2D, 0);
+    //glBindTexture(GL_TEXTURE_2D, m_framebufferObjects["fbo_1"]->texture());
+    //renderTexturedQuad(width, height, true);
+    //glBindTexture(GL_TEXTURE_2D, 0);
 
     m_framebufferObjects["fbo_2"]->bind();
     m_shaderPrograms["brightpass"]->bind();
@@ -333,9 +332,9 @@ void GLWidget::paintGL()
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 
-    // glBindTexture(GL_TEXTURE_2D, m_framebufferObjects["fbo_3"]->texture());
-    // renderTexturedQuad(width, height, true);
-    // glBindTexture(GL_TEXTURE_2D, 0);
+    //glBindTexture(GL_TEXTURE_2D, m_framebufferObjects["fbo_3"]->texture());
+    //renderTexturedQuad(width, height, true);
+    //glBindTexture(GL_TEXTURE_2D, 0);
 
     /*
     m_framebufferObjects["fbo_1"]->bind();

@@ -6,13 +6,12 @@
 class Orbit {
 public:
     Orbit();
-    Orbit(float xamp, float yamp, float zamp, float freq);
+    Orbit(float xamp, float tilt, float zamp);
     virtual ~Orbit();
 
-    Vector3 getPositionAtTime(float t);
+    Vector3 getPositionAtAngle(float radians);
 private:
-    float m_xamp, m_zamp, m_yamp;
-    float m_freq;
+    float m_xamp, m_zamp, m_tilt;
 };
 
 #endif // ORBIT_H
