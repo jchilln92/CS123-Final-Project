@@ -1,11 +1,11 @@
 #include "SystemGenerator.h"
 
-#define MIN_ORB_RADIUS 10.0
-#define MAX_ORB_RADIUS 100.0
+#define MIN_ORB_RADIUS 8.0
+#define MAX_ORB_RADIUS 70.0
 #define MIN_PL_RADIUS 0.6
 #define MAX_PL_RADIUS 2.0
 #define MIN_SUN_RADIUS 3.0
-#define MAX_SUN_RADIUS 6.0
+#define MAX_SUN_RADIUS 5.5
 #define MIN_NUM_PLANETS 4
 #define MAX_NUM_PLANETS 12
 
@@ -37,7 +37,7 @@ QList<Planet> SystemGenerator::generate() {
         orb_rot.push_back(randf(0,M_2PI));
         orb_tilt.push_back(randf(-M_PI/8.0,M_PI/8.0));
         v = Vector3(randf(-0.2,0.2),1.0,randf(-0.2,0.2));
-        v = v.normalize();
+        v.normalize();
         axis.push_back(v);
     }
     QList<float> orb_radius = QList<float>();
@@ -47,10 +47,13 @@ QList<Planet> SystemGenerator::generate() {
         do {
             r = randf(MIN_ORB_RADIUS,MAX_ORB_RADIUS);
             for (int j = 0; j < orb_radius.size(); j++) {
-                good = !(pl_radius[i] + r > pl_radius[j] - orb_radius[j] && pl_radius[i] - r < pl_radius[j] + orb_radius[j]);
+                if (!(pl_radius[i] + r > pl_radius[j] - orb_radius[j] && pl_radius[i] - r < pl_radius[j] + orb_radius[j])) {
+                    good = false;
+                    break;
+                }
             }
         } while (!good);
-        push_back(r);
+        orb_radius.push_back(r);
     }
     QList<Planet> planets = QList<Planet>();
     for (int i = 0; i < num_planets + 1; i++) {
@@ -79,4 +82,5 @@ QList<Planet> SystemGenerator::generate() {
             planets.push_back(planet);
         }
     }
+    return planets;
 }

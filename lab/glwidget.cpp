@@ -11,6 +11,7 @@
 #include <QWheelEvent>
 #include "glm.h"
 
+#include "gen/SystemGenerator.h"
 #include "geom/Planet.h"
 #include "geom/Orbit.h"
 #include "lab/scene.h"
@@ -109,35 +110,12 @@ void GLWidget::initializeResources()
     m_skybox = ResourceLoader::loadSkybox();
     cout << "Loaded skybox..." << endl;
 
-    Planet sun;
-    sun.setDetail(LOW);
-    sun.setRadius(4);
-    sun.setTexture("../CS123-Final-Project/textures/SunTexture.png", 0);
-    sun.setIsStar(true);
-    m_scene->addBody(sun);
-
-    Planet planet;
-    planet.setDetail(LOW);
-    planet.setOrbit(Orbit(10, 0, 10));
-    planet.setRadius(1.2);
-    planet.setAxis(Vector3(-.4, 1, 0));
-    planet.setAxialRotation(0);
-    planet.setTexture("/course/cs123/data/image/terrain/grass.JPG", 0);
-    planet.setTexture("/course/cs123/data/image/terrain/dirt.JPG", 1);
-    planet.setTexture("/course/cs123/data/image/terrain/snow.JPG", 2);
-    planet.setTexture("/course/cs123/data/image/terrain/rock.JPG", 3);
-    m_scene->addBody(planet);
-
-    Planet planet2;
-    planet2.setDetail(LOW);
-    planet2.setOrbit(Orbit(8, M_PI/2.0, 10));
-    planet2.setAxis(Vector3(.4, 1, 0));
-    planet2.setAxialRotation(0);
-    planet2.setTexture("/course/cs123/data/image/terrain/grass.JPG", 0);
-    planet2.setTexture("/course/cs123/data/image/terrain/dirt.JPG", 1);
-    planet2.setTexture("/course/cs123/data/image/terrain/snow.JPG", 2);
-    planet2.setTexture("/course/cs123/data/image/terrain/rock.JPG", 3);
-    m_scene->addBody(planet2);
+    SystemGenerator gen;
+    QList<Planet> pls = gen.generate();
+    for (int i = 0; i < pls.size(); i++) {
+        m_scene->addBody(pls[i]);
+    }
+    cout << "Created system..." << endl;
 
     loadCubeMap();
     cout << "Loaded cube map..." << endl;
