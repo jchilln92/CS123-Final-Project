@@ -14,8 +14,8 @@ std::vector<Planet>& Scene::getBodies() {
     return m_bodies;
 }
 
-void Scene::doTick() {
-    m_time++;
+void Scene::doTicks(int numTicks) {
+    m_time += numTicks;
 
     for (unsigned int i = 0; i < m_bodies.size(); i++) {
         Planet *body = &m_bodies.at(i);
@@ -25,7 +25,7 @@ void Scene::doTick() {
         float arot = (m_time % axialPeriod) / (float)axialPeriod;
         arot *= M_2PI;
         body->setAxialRotation(arot);
-        body->calculateNewOrbitalPosition();
+        body->calculateNewOrbitalPosition(numTicks);
     }
 }
 

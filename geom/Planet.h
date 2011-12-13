@@ -39,7 +39,7 @@ public:
     void setAxis(Vector3 axis) { m_axis = axis; m_axis.normalize(); }
     void setAxialRotation(float radians) { m_axialRotation = fmod(radians, M_2PI); }
     void setOrbitalRotation(float radians);
-    void calculateNewOrbitalPosition();
+    void calculateNewOrbitalPosition(int numTicks);
 
     int getSeed() { return m_seed; }
     int getOctaveCount() { return m_octaveCount; }

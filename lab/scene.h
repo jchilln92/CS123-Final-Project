@@ -16,7 +16,7 @@ public:
 
     void updateBodyDetails(Camera *cam);
     void render();
-    void doTick();
+    void doTicks(int numTicks);
 private:
     int m_time; // the scene time, in ticks
     std::vector<Planet> m_bodies;

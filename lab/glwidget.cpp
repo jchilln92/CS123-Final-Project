@@ -25,13 +25,6 @@ extern "C"
 
 static const int MAX_FPS = 120;
 
-class SimThread : public QThread {
-public:
-protected:
-    virtual void run() {
-
-    }
-};
 
 /**
   Constructor.  Initialize all member variables here.
@@ -91,10 +84,15 @@ void GLWidget::initializeGL()
 
     // Start the simulation timer
     m_simTimer.start(1.0f); // 1 tick = ~1ms
+    m_prevSimTime = m_clock.elapsed();
 }
 
 void GLWidget::doSimTick() {
-    m_scene->doTick();
+    int time = m_clock.elapsed();
+    int timeElapsed = time - m_prevSimTime;
+    int numTicks = timeElapsed;
+    m_prevSimTime = time;
+    m_scene->doTicks(numTicks);
 }
 
 /**
@@ -538,9 +536,13 @@ void GLWidget::keyPressEvent(QKeyEvent *event)
     switch(event->key())
     {
         case Qt::Key_P:
-            if (m_simTimer.isActive())
+            if (m_simTimer.isActive()) {
                 m_simTimer.stop();
-            else m_simTimer.start(1.0f);
+            } else {
+                m_prevSimTime = m_clock.elapsed();
+                m_simTimer.start(1.0f);
+            }
+
             break;
         case Qt::Key_S:
             QImage qi = grabFrameBuffer(false);
