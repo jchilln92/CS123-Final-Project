@@ -24,7 +24,8 @@ HEADERS += lab/glwidget.h \
     geom/Planet.h \
     geom/MeshDetail.h \
     lab/scene.h \
-    geom/Orbit.h
+    geom/Orbit.h \
+    gen/SystemGenerator.h
 SOURCES += lab/glwidget.cpp \
     lib/targa.cpp \
     lib/glm.cpp \
@@ -36,7 +37,8 @@ SOURCES += lab/glwidget.cpp \
     geom/Shape.cpp \
     geom/Planet.cpp \
     lab/scene.cpp \
-    geom/Orbit.cpp
+    geom/Orbit.cpp \
+    gen/SystemGenerator.cpp
 FORMS += mainwindow.ui \
     support/mainwindow.ui
 OTHER_FILES += shaders/refract.vert \
