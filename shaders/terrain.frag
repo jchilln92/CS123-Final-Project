@@ -36,6 +36,6 @@ vec4 sampleTextures() {
 }
 
 void main() {
-    // gl_FragColor = vec4((sampleTextures() * intensity).rgb,depth);
-    gl_FragColor = vec4(depth,depth,depth,1);
+    gl_FragColor = vec4((sampleTextures() * intensity).rgb,depth);
+    // gl_FragColor = vec4(depth,depth,depth,1);
 }

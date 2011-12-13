@@ -174,6 +174,7 @@ void GLWidget::createShaderPrograms()
                                                                    "../CS123-Final-Project/shaders/refract.frag");
     m_shaderPrograms["brightpass"] = ResourceLoader::newFragShaderProgram(ctx, "../CS123-Final-Project/shaders/brightpass.frag");
     m_shaderPrograms["blur"] = ResourceLoader::newFragShaderProgram(ctx, "../CS123-Final-Project/shaders/blur.frag");
+    m_shaderPrograms["dof"] = ResourceLoader::newFragShaderProgram(ctx, "../CS123-Final-Project/shaders/dof.frag");
 }
 
 /**
@@ -194,6 +195,8 @@ void GLWidget::createFramebufferObjects(int width, int height)
                                                              GL_TEXTURE_2D, GL_RGB16F_ARB);
     // TODO: Create another framebuffer here.  Look up two lines to see how to do this... =.=
     m_framebufferObjects["fbo_2"] = new QGLFramebufferObject(width, height, QGLFramebufferObject::NoAttachment,
+                                                             GL_TEXTURE_2D, GL_RGB16F_ARB);
+    m_framebufferObjects["fbo_3"] = new QGLFramebufferObject(width, height, QGLFramebufferObject::NoAttachment,
                                                              GL_TEXTURE_2D, GL_RGB16F_ARB);
 }
 
@@ -253,29 +256,51 @@ void GLWidget::paintGL()
     // paintText();
 
 
+
     //---------------------------------
     // Old Framebuffer code, might be useful later
 
     // Render the scene to a framebuffer
+    glEnable(GL_BLEND);
+    // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBlendFunc(GL_ONE, GL_ONE);
     m_framebufferObjects["fbo_0"]->bind();
     applyPerspectiveCamera(width, height);
     renderScene();
-
     m_framebufferObjects["fbo_0"]->release();
+    glDisable(GL_BLEND);
 
     // Copy the rendered scene into framebuffer 1
+
     m_framebufferObjects["fbo_0"]->blitFramebuffer(m_framebufferObjects["fbo_1"],
                                                    QRect(0, 0, width, height), m_framebufferObjects["fbo_0"],
                                                    QRect(0, 0, width, height), GL_COLOR_BUFFER_BIT, GL_NEAREST);
 
-    // TODO: Add drawing code here
     glDisable(GL_LIGHTING);
     applyOrthogonalCamera(width, height);
     glBindTexture(GL_TEXTURE_2D, m_framebufferObjects["fbo_0"]->texture());
+    // renderTexturedQuad(width, height, true);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    glEnable(GL_BLEND);
+
+    m_framebufferObjects["fbo_1"]->bind();
+    glClearColor(0.0,0.0,0.0,0.0);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    m_shaderPrograms["dof"]->bind();
+    m_shaderPrograms["dof"]->setUniformValue("width",width);
+    m_shaderPrograms["dof"]->setUniformValue("height",height);
+    glBindTexture(GL_TEXTURE_2D, m_framebufferObjects["fbo_0"]->texture());
     renderTexturedQuad(width, height, true);
     glBindTexture(GL_TEXTURE_2D, 0);
-    glEnable(GL_LIGHTING);
-    /*
+    m_shaderPrograms["dof"]->release();
+    m_framebufferObjects["fbo_1"]->release();
+    glDisable(GL_BLEND);
+
+    glBindTexture(GL_TEXTURE_2D, m_framebufferObjects["fbo_1"]->texture());
+    renderTexturedQuad(width, height, true);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
     m_framebufferObjects["fbo_2"]->bind();
     m_shaderPrograms["brightpass"]->bind();
     glBindTexture(GL_TEXTURE_2D, m_framebufferObjects["fbo_1"]->texture());
@@ -284,13 +309,15 @@ void GLWidget::paintGL()
     glBindTexture(GL_TEXTURE_2D, 0);
     m_framebufferObjects["fbo_2"]->release();
 
-    // TODO: Uncomment this section in step 2 of the lab
-
     float scales[] = {4.f,8.f,16.f,32.f};
     for (int i = 0; i < 4; ++i)
     {
         // Render the blurred brightpass filter result to fbo 1
         renderBlur(width / scales[i], height / scales[i]);
+
+        // glBindTexture(GL_TEXTURE_2D, m_framebufferObjects["fbo_1"]->texture());
+        // renderTexturedQuad(width, height, false);
+        // glBindTexture(GL_TEXTURE_2D, 0);
 
         // Bind the image from fbo to a texture
         glBindTexture(GL_TEXTURE_2D, m_framebufferObjects["fbo_1"]->texture());
@@ -305,9 +332,24 @@ void GLWidget::paintGL()
         glDisable(GL_BLEND);
         glBindTexture(GL_TEXTURE_2D, 0);
     }
-    */
-    // paintText();
 
+    // glBindTexture(GL_TEXTURE_2D, m_framebufferObjects["fbo_3"]->texture());
+    // renderTexturedQuad(width, height, true);
+    // glBindTexture(GL_TEXTURE_2D, 0);
+
+    /*
+    m_framebufferObjects["fbo_1"]->bind();
+    m_shaderPrograms["dof"]->bind();
+    glBindTexture(GL_TEXTURE_2D, m_framebufferObjects["fbo_2"]->texture());
+    renderTexturedQuad(width, height, true);
+    m_shaderPrograms["dof"]->release();
+    glBindTexture(GL_TEXTURE_2D, 0);
+    m_framebufferObjects["fbo_1"]->release();
+    */
+
+
+    paintText();
+    glEnable(GL_LIGHTING);
 }
 
 /**
