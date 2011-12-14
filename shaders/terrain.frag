@@ -26,10 +26,10 @@ vec4 sampleTextures() {
     float tex4_rng = tex4_max-tex4_min;
     float tex4_w = max(0.0,(tex4_rng-abs(height-tex4_max))/tex4_rng);
 
-    vec4 sample = tex1_w*texture2D(tex1, gl_TexCoord[0].st);
-    sample += tex2_w*texture2D(tex2, gl_TexCoord[0].st);
-    sample += tex3_w*texture2D(tex3, gl_TexCoord[0].st);
-    sample += tex4_w*texture2D(tex4, gl_TexCoord[0].st);
+    vec4 sample = tex1_w*texture2D(tex1, gl_TexCoord[0].st * 6.0);
+    sample += tex2_w*texture2D(tex2, gl_TexCoord[0].st * 6.0);
+    sample += tex3_w*texture2D(tex3, gl_TexCoord[0].st * 6.0);
+    sample += tex4_w*texture2D(tex4, gl_TexCoord[0].st * 6.0);
 
     //return vec4(tex1_w,tex2_w,tex3_w,tex4_w);
     return sample;

@@ -40,6 +40,7 @@ public:
     void setAxialRotation(float radians) { m_axialRotation = fmod(radians, M_2PI); }
     void setOrbitalRotation(float radians);
     void calculateNewOrbitalPosition(int numTicks);
+    void setTerrainAmplitude(float amp) { m_terrainAmplitude = amp; }
 
     int getSeed() { return m_seed; }
     int getOctaveCount() { return m_octaveCount; }
@@ -56,6 +57,7 @@ private:
     MeshDetail m_renderDetail;
     int m_seed;
     int m_octaveCount;
+    float m_terrainAmplitude;
 
     GLuint textures[MAX_PLANET_TEXTURES];
 

@@ -123,6 +123,7 @@ float perlinNoise(vec3 pos, int seed, int octaves) {
     for (int i = 0; i < octaves; i++) {
         frequency = float(2 << i);
         amplitude = 1.0 / sqrt(frequency);
+        //amplitude = 5/(8+(i-.64)*(i-.64));
         offset += interpolatedNoise(frequency * pos, seed) * amplitude;
     }
     return offset;

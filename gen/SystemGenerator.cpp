@@ -74,6 +74,8 @@ QList<Planet> SystemGenerator::generate() {
             planet.setAxis(axis[idx]);
             planet.setAxialRotation(axial_rot[idx]);
             planet.setOrbitalRotation(orb_rot[idx]);
+            planet.setTerrainAmplitude(randf(.04, .12));
+
             // lol textchers
             planet.setTexture("/course/cs123/data/image/terrain/grass.JPG", 0);
             planet.setTexture("/course/cs123/data/image/terrain/dirt.JPG", 1);

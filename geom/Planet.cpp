@@ -123,7 +123,7 @@ void Planet::render() {
         m_planetShader->setUniformValue("tex4", (GLuint)3);
 
         // load in other uniforms
-        m_planetShader->setUniformValue("global_amp_scale",(GLfloat)0.05);
+        m_planetShader->setUniformValue("global_amp_scale",(GLfloat)0.10);
         m_planetShader->setUniformValue("global_pos_scale",(GLfloat)2.0);
         m_planetShader->setUniformValue("planet_seed",(GLuint)getSeed());
         m_planetShader->setUniformValue("noise_octaves",(GLuint)getOctaveCount());
