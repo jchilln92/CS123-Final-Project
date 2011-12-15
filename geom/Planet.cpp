@@ -123,7 +123,7 @@ void Planet::render() {
         m_planetShader->setUniformValue("tex4", (GLuint)3);
 
         // load in other uniforms
-        m_planetShader->setUniformValue("global_amp_scale",(GLfloat)0.10);
+        m_planetShader->setUniformValue("global_amp_scale",(GLfloat)m_terrainAmplitude);
         m_planetShader->setUniformValue("global_pos_scale",(GLfloat)2.0);
         m_planetShader->setUniformValue("planet_seed",(GLuint)getSeed());
         m_planetShader->setUniformValue("noise_octaves",(GLuint)getOctaveCount());
@@ -140,14 +140,14 @@ void Planet::render() {
             m_planetShader->setUniformValue("tex4_min", (GLfloat).3);
             m_planetShader->setUniformValue("tex4_max", (GLfloat)0.8);
         } else {
-            m_planetShader->setUniformValue("tex1_min", (GLfloat)-0.02);
-            m_planetShader->setUniformValue("tex1_max", (GLfloat)0);
-            m_planetShader->setUniformValue("tex2_min", (GLfloat)0);
-            m_planetShader->setUniformValue("tex2_max", (GLfloat)0.02);
-            m_planetShader->setUniformValue("tex3_min", (GLfloat)0.02);
-            m_planetShader->setUniformValue("tex3_max", (GLfloat)0.1);
-            m_planetShader->setUniformValue("tex4_min", (GLfloat)-0.1);
-            m_planetShader->setUniformValue("tex4_max", (GLfloat)-0.02);
+            m_planetShader->setUniformValue("tex1_min", (GLfloat)-1.0);
+            m_planetShader->setUniformValue("tex1_max", (GLfloat)-0.015);
+            m_planetShader->setUniformValue("tex2_min", (GLfloat)-0.015);
+            m_planetShader->setUniformValue("tex2_max", (GLfloat)0.0);
+            m_planetShader->setUniformValue("tex3_min", (GLfloat)0.0);
+            m_planetShader->setUniformValue("tex3_max", (GLfloat)0.015);
+            m_planetShader->setUniformValue("tex4_min", (GLfloat)0.015);
+            m_planetShader->setUniformValue("tex4_max", (GLfloat)1.0);
         }
     } else {
         m_starShader->bind();
