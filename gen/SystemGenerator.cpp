@@ -74,13 +74,14 @@ QList<Planet> SystemGenerator::generate() {
             planet.setAxis(axis[idx]);
             planet.setAxialRotation(axial_rot[idx]);
             planet.setOrbitalRotation(orb_rot[idx]);
-            planet.setTerrainAmplitude(randf(.04, .12));
+            planet.setTerrainAmplitude(randf(.04, .10));
+            planet.setHasWater(true);
 
             // lol textchers
-            planet.setTexture("/course/cs123/data/image/terrain/grass.JPG", 0);
-            planet.setTexture("/course/cs123/data/image/terrain/dirt.JPG", 1);
-            planet.setTexture("/course/cs123/data/image/terrain/snow.JPG", 2);
-            planet.setTexture("/course/cs123/data/image/terrain/rock.JPG", 3);
+            planet.setTexture("../CS123-Final-Project/textures/unsorted/WaterPlain0012_2_S.jpg", 0);
+            planet.setTexture("/course/cs123/data/image/terrain/grass.JPG", 1);
+            planet.setTexture("/course/cs123/data/image/terrain/grass.JPG", 2);
+            planet.setTexture("/course/cs123/data/image/terrain/grass.JPG", 3);
             planets.push_back(planet);
         }
     }
