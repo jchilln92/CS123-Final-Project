@@ -1,13 +1,49 @@
 #include "SystemGenerator.h"
 
 #define MIN_ORB_RADIUS 8.0
-#define MAX_ORB_RADIUS 70.0
-#define MIN_PL_RADIUS 0.6
-#define MAX_PL_RADIUS 2.0
+#define MAX_ORB_RADIUS 50.0
+#define MIN_PL_RADIUS 0.4
+#define MAX_PL_RADIUS 1.6
 #define MIN_SUN_RADIUS 3.0
 #define MAX_SUN_RADIUS 5.5
 #define MIN_NUM_PLANETS 4
-#define MAX_NUM_PLANETS 12
+#define MAX_NUM_PLANETS 10
+
+#define NUM_LOWTEX 6
+#define NUM_MLTEX 7
+#define NUM_MHTEX 3
+#define NUM_HITEX 3
+
+const char *lowtex[] = {
+    "../CS123-Final-Project/textures/unsorted/Rust0141_7_S.jpg",
+    "../CS123-Final-Project/textures/unsorted/Rust0143_15_S.jpg",
+    "../CS123-Final-Project/textures/unsorted/SoilSand0181_23_S.jpg",
+    "../CS123-Final-Project/textures/unsorted/SoilSand0182_11_S.jpg",
+    "../CS123-Final-Project/textures/unsorted/SoilCracked0157_7_M.jpg",
+    "/course/cs123/data/image/terrain/rock.JPG"
+};
+
+const char *medlowtex[] = {
+    "../CS123-Final-Project/textures/unsorted/SoilSand0181_23_S.jpg",
+    "../CS123-Final-Project/textures/unsorted/SoilSand0182_11_S.jpg",
+    "../CS123-Final-Project/textures/unsorted/SoilCracked0157_7_M.jpg",
+    "../CS123-Final-Project/textures/unsorted/Grass0126_2_S.jpg",
+    "../CS123-Final-Project/textures/unsorted/NatureForests0009_2_S.jpg",
+    "../CS123-Final-Project/textures/unsorted/NatureForests0072_12_S.jpg",
+    "/course/cs123/data/image/terrain/grass.JPG"
+};
+
+const char *medhitex[] = {
+    "../CS123-Final-Project/textures/unsorted/Cliffs0143_9_S.jpg",
+    "../CS123-Final-Project/textures/unsorted/Cliffs0199_189_S.jpg",
+    "/course/cs123/data/image/terrain/dirt.JPG"
+};
+
+const char *hitex[] = {
+    "../CS123-Final-Project/textures/unsorted/Snow0041_5_S.jpg",
+    "../CS123-Final-Project/textures/unsorted/Ice0044_42_S.jpg",
+    "/course/cs123/data/image/terrain/snow.JPG"
+};
 
 int randi(int min, int max) {
     return rand()%(max - min)+min;
@@ -74,13 +110,13 @@ QList<Planet> SystemGenerator::generate() {
             planet.setAxis(axis[idx]);
             planet.setAxialRotation(axial_rot[idx]);
             planet.setOrbitalRotation(orb_rot[idx]);
-            planet.setTerrainAmplitude(randf(.04, .12));
+            planet.setTerrainAmplitude(randf(.02, .1));
 
             // lol textchers
-            planet.setTexture("/course/cs123/data/image/terrain/grass.JPG", 0);
-            planet.setTexture("/course/cs123/data/image/terrain/dirt.JPG", 1);
-            planet.setTexture("/course/cs123/data/image/terrain/snow.JPG", 2);
-            planet.setTexture("/course/cs123/data/image/terrain/rock.JPG", 3);
+            planet.setTexture(lowtex[randi(0,NUM_LOWTEX)], 0);
+            planet.setTexture(medlowtex[randi(0,NUM_MLTEX)], 1);
+            planet.setTexture(medhitex[randi(0,NUM_MHTEX)], 2);
+            planet.setTexture(hitex[randi(0,NUM_HITEX)], 3);
             planets.push_back(planet);
         }
     }
