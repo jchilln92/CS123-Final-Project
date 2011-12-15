@@ -30,7 +30,7 @@ public:
     Vector3 getCenter() { return m_center; }
     float getRadius() { return m_radius; }
     float getAxialRotation() { return m_axialRotation; }
-    float getAxialPeriod() { return 18000.0 * m_radius; }
+    float getAxialPeriod() { return 7200.0 * m_radius*m_radius; }
     float getOrbitalPeriod() { return 10000.0 * sqrt(m_center.length()); }
     bool getIsStar() { return m_isStar; }
     void setIsStar(bool s) { m_isStar = s; }

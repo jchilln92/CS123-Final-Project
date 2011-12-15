@@ -3,7 +3,7 @@
 
 Camera::Camera()
 {
-    m_eye = Vector3(0,0,10);
+    m_eye = Vector3(1, 20, 20);
     m_look = Vector3(-m_eye.x, -m_eye.y, -m_eye.z).unit();
     m_up = Vector3(0, 1, 0);
 }

@@ -511,6 +511,8 @@ void GLWidget::createBlurKernel(int radius, int width, int height,
  **/
 void GLWidget::keyPressEvent(QKeyEvent *event)
 {
+    SystemGenerator gen;
+    QList<Planet> pls;
     switch(event->key())
     {
         case Qt::Key_P:
@@ -520,7 +522,13 @@ void GLWidget::keyPressEvent(QKeyEvent *event)
                 m_prevSimTime = m_clock.elapsed();
                 m_simTimer.start(1.0f);
             }
-
+            break;
+        case Qt::Key_R:
+            m_scene->clear();
+            pls = gen.generate();
+            for (int i = 0; i < pls.size(); i++) {
+                m_scene->addBody(pls[i]);
+            }
             break;
         case Qt::Key_S:
             QImage qi = grabFrameBuffer(false);
@@ -549,6 +557,7 @@ void GLWidget::paintText()
     renderText(10, 20, "FPS: " + QString::number((int) (m_prevFps)), m_font);
     renderText(10, 35, "S: Save screenshot", m_font);
     renderText(10, 50, "P: Toggle animation", m_font);
+    renderText(10, 65, "R: Regenerate system", m_font);
 
     glColor3f(1.f, 1.f, 1.f);
 }

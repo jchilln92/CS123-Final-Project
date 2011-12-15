@@ -1,7 +1,6 @@
 #include "SystemGenerator.h"
 
 #define MIN_ORB_RADIUS 8.0
-#define MAX_ORB_RADIUS 50.0
 #define MIN_PL_RADIUS 0.4
 #define MAX_PL_RADIUS 1.6
 #define MIN_SUN_RADIUS 3.0
@@ -12,7 +11,7 @@
 #define NUM_LOWTEX 6
 #define NUM_MLTEX 7
 #define NUM_MHTEX 3
-#define NUM_HITEX 3
+#define NUM_HITEX 2
 
 const char *lowtex[] = {
     "../CS123-Final-Project/textures/unsorted/Rust0141_7_S.jpg",
@@ -43,8 +42,7 @@ const char *medhitex[] = {
 
 const char *hitex[] = {
     "../CS123-Final-Project/textures/unsorted/Snow0041_5_S.jpg",
-    "../CS123-Final-Project/textures/unsorted/Ice0044_42_S.jpg",
-    "/course/cs123/data/image/terrain/snow.JPG"
+    "../CS123-Final-Project/textures/unsorted/Ice0044_42_S.jpg"
 };
 
 int randi(int min, int max) {
@@ -68,19 +66,11 @@ QList<Planet> SystemGenerator::generate() {
         pl_radius.push_back(randf(MIN_PL_RADIUS, MAX_PL_RADIUS));
     }
     QList<float> orb_radius = QList<float>();
+    float r = MIN_ORB_RADIUS + randf(0.0,5.0);
     for (int i = 0; i < num_planets; i++) {
-        bool good = true;
-        float r;
-        do {
-            r = randf(MIN_ORB_RADIUS,MAX_ORB_RADIUS);
-            for (int j = 0; j < orb_radius.size(); j++) {
-                if (!(pl_radius[i] + r > pl_radius[j] - orb_radius[j] && pl_radius[i] - r < pl_radius[j] + orb_radius[j])) {
-                    good = false;
-                    break;
-                }
-            }
-        } while (!good);
+        r += pl_radius[i];
         orb_radius.push_back(r);
+        r += pl_radius[i] + randf(0.0,5.0);
     }
     QList<Planet> planets = QList<Planet>();
     Vector3 v;
@@ -95,7 +85,8 @@ QList<Planet> SystemGenerator::generate() {
             planets.push_back(sun);
         } else { // not sun
             int idx = i-1;
-            bool water = randi(0,2);
+            bool far = orb_radius[idx] > 30;
+            bool water = far ? false : randi(0,2);
 
             Planet planet;
             planet.setDetail(LOW);

@@ -65,3 +65,8 @@ void Scene::render() {
 
     glActiveTexture(GL_TEXTURE0); // make renderText work again
 }
+
+void Scene::clear() {
+    m_bodies.clear();
+    m_time = 0;
+}

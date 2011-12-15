@@ -26,7 +26,7 @@ vec4 sampleTextures() {
     float tex3_w = max(0.0,(tex3_rng-abs(height-tex3_max))/tex3_rng);
 
     float tex4_rng = tex4_max-tex4_min;
-    float tex4_w = max(0.0,(tex4_rng-abs(height-tex4_max))/tex4_rng);
+    float tex4_w = max(0.0,4.0*(tex4_rng-abs(height-tex4_max))/tex4_rng);
 
     if (has_water) {
         if (height <= 0.0) {
