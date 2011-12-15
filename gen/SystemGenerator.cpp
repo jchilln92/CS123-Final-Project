@@ -27,7 +27,9 @@ const char *medlowtex[] = {
     "../CS123-Final-Project/textures/unsorted/SoilSand0181_23_S.jpg",
     "../CS123-Final-Project/textures/unsorted/SoilSand0182_11_S.jpg",
     "../CS123-Final-Project/textures/unsorted/SoilCracked0157_7_M.jpg",
-    "../CS123-Final-Project/textures/unsorted/Grass0126_2_S.jpg",
+    // "../CS123-Final-Project/textures/unsorted/Grass0126_2_S.jpg",
+    "../CS123-Final-Project/textures/unsorted/grass_genetica.jpg",
+    "../CS123-Final-Project/textures/unsorted/grass_genetica_2.jpg",
     "../CS123-Final-Project/textures/unsorted/NatureForests0009_2_S.jpg",
     "../CS123-Final-Project/textures/unsorted/NatureForests0072_12_S.jpg",
     "/course/cs123/data/image/terrain/grass.JPG"
