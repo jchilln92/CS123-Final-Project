@@ -112,6 +112,7 @@ QList<Planet> SystemGenerator::generate() {
             planet.setAxis(axis[idx]);
             planet.setAxialRotation(axial_rot[idx]);
             planet.setOrbitalRotation(orb_rot[idx]);
+            planet.setHasWater(true);
             planet.setTerrainAmplitude(randf(.02, .1));
 
             // lol textchers

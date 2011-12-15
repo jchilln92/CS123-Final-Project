@@ -41,6 +41,7 @@ public:
     void setOrbitalRotation(float radians);
     void calculateNewOrbitalPosition(int numTicks);
     void setTerrainAmplitude(float amp) { m_terrainAmplitude = amp; }
+    void setHasWater(bool hasWater) { m_hasWater = hasWater; }
 
     int getSeed() { return m_seed; }
     int getOctaveCount() { return m_octaveCount; }
@@ -58,6 +59,7 @@ private:
     int m_seed;
     int m_octaveCount;
     float m_terrainAmplitude;
+    bool m_hasWater;
 
     GLuint textures[MAX_PLANET_TEXTURES];
 

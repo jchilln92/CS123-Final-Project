@@ -7,6 +7,8 @@ uniform float global_pos_scale;
 uniform int planet_seed;
 uniform int noise_octaves;
 
+uniform bool has_water;
+
 varying float intensity;
 varying float height;
 varying float depth;
@@ -158,9 +160,21 @@ vec3 perturbedNormal(vec3 pos, vec3 norm, float disp, int seed, int octaves) {
 
 void main() {
     height = global_amp_scale * perlinNoise(gl_Vertex.xyz, planet_seed, noise_octaves);
+
+    if (has_water && height <= 0) {
+        height = 0;
+    }
+
     vec3 perturbedVertex = gl_Vertex.xyz + height * gl_Normal;
     gl_Position = gl_ModelViewProjectionMatrix * vec4(perturbedVertex, 1);
-    vec3 normal = normalize(gl_NormalMatrix * perturbedNormal(gl_Vertex, gl_Normal, height, planet_seed, noise_octaves)).xyz;
+
+    vec3 normal;
+    if (has_water && height == 0) {
+        normal = gl_NormalMatrix * gl_Normal;
+    } else {
+        normal = normalize(gl_NormalMatrix * perturbedNormal(gl_Vertex, gl_Normal, height, planet_seed, noise_octaves)).xyz;
+    }
+
     vec3 light = normalize(gl_LightSource[0].position -
                            gl_ModelViewMatrix * vec4(perturbedVertex, 1)).xyz;
     intensity = max(0.0, dot(normal, light));
