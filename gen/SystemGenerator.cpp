@@ -64,19 +64,8 @@ QList<Planet> SystemGenerator::generate() {
     srand(time(NULL));
     int num_planets = randi(MIN_NUM_PLANETS,MAX_NUM_PLANETS);
     QList<float> pl_radius = QList<float>();
-    QList<float> axial_rot = QList<float>();
-    QList<float> orb_rot = QList<float>();
-    QList<float> orb_tilt = QList<float>();
-    QList<Vector3> axis = QList<Vector3>();
-    Vector3 v;
     for (int i = 0; i < num_planets; i++) {
         pl_radius.push_back(randf(MIN_PL_RADIUS, MAX_PL_RADIUS));
-        axial_rot.push_back(randf(0,M_2PI));
-        orb_rot.push_back(randf(0,M_2PI));
-        orb_tilt.push_back(randf(-M_PI/8.0,M_PI/8.0));
-        v = Vector3(randf(-0.2,0.2),1.0,randf(-0.2,0.2));
-        v.normalize();
-        axis.push_back(v);
     }
     QList<float> orb_radius = QList<float>();
     for (int i = 0; i < num_planets; i++) {
@@ -94,6 +83,7 @@ QList<Planet> SystemGenerator::generate() {
         orb_radius.push_back(r);
     }
     QList<Planet> planets = QList<Planet>();
+    Vector3 v;
     for (int i = 0; i < num_planets + 1; i++) {
         if (i == 0) { // sun
             Planet sun;
@@ -105,18 +95,22 @@ QList<Planet> SystemGenerator::generate() {
             planets.push_back(sun);
         } else { // not sun
             int idx = i-1;
+            bool water = randi(0,2);
+
             Planet planet;
             planet.setDetail(LOW);
-            planet.setOrbit(Orbit(orb_radius[idx], orb_tilt[idx], orb_radius[idx]));
+            planet.setOrbit(Orbit(orb_radius[idx], randf(-M_PI/8.0,M_PI/8.0), orb_radius[idx]));
             planet.setRadius(pl_radius[idx]);
-            planet.setAxis(axis[idx]);
-            planet.setAxialRotation(axial_rot[idx]);
-            planet.setOrbitalRotation(orb_rot[idx]);
-            planet.setHasWater(true);
+            v = Vector3(randf(-0.2,0.2),1.0,randf(-0.2,0.2));
+            v.normalize();
+            planet.setAxis(v);
+            planet.setAxialRotation(randf(0,M_2PI));
+            planet.setOrbitalRotation(randf(0,M_2PI));
+            planet.setHasWater(water);
             planet.setTerrainAmplitude(randf(.02, .1));
 
             // lol textchers
-            planet.setTexture(lowtex[randi(0,NUM_LOWTEX)], 0);
+            planet.setTexture((water ? "../CS123-Final-Project/textures/unsorted/WaterPlain0012_2_S.jpg" : lowtex[randi(0,NUM_LOWTEX)]), 0);
             planet.setTexture(medlowtex[randi(0,NUM_MLTEX)], 1);
             planet.setTexture(medhitex[randi(0,NUM_MHTEX)], 2);
             planet.setTexture(hitex[randi(0,NUM_HITEX)], 3);

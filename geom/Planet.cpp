@@ -3,8 +3,8 @@
 #include "support/resourceloader.h"
 #include <qgl.h>
 
-#define PARAM_VERY_LOW  15
-#define PARAM_LOW       30
+#define PARAM_VERY_LOW  30
+#define PARAM_LOW       60
 #define PARAM_MEDIUM    60
 #define PARAM_HIGH      120
 #define PARAM_VERY_HIGH 240
@@ -130,25 +130,15 @@ void Planet::render() {
         m_planetShader->setUniformValue("has_water",m_hasWater);
 
         // load data about how the textures are to be mapped for the planet shader
-        if (m_hasWater) {
-            m_planetShader->setUniformValue("tex1_min", (GLfloat)-1);
-            m_planetShader->setUniformValue("tex1_max", (GLfloat)0.00001);
-            m_planetShader->setUniformValue("tex2_min", (GLfloat)0.0001);
-            m_planetShader->setUniformValue("tex2_max", (GLfloat)0.2);
-            m_planetShader->setUniformValue("tex3_min", (GLfloat)0.2);
-            m_planetShader->setUniformValue("tex3_max", (GLfloat)0.3);
-            m_planetShader->setUniformValue("tex4_min", (GLfloat).3);
-            m_planetShader->setUniformValue("tex4_max", (GLfloat)0.8);
-        } else {
-            m_planetShader->setUniformValue("tex1_min", (GLfloat)-1.0);
-            m_planetShader->setUniformValue("tex1_max", (GLfloat)-0.015);
-            m_planetShader->setUniformValue("tex2_min", (GLfloat)-0.015);
-            m_planetShader->setUniformValue("tex2_max", (GLfloat)0.0);
-            m_planetShader->setUniformValue("tex3_min", (GLfloat)0.0);
-            m_planetShader->setUniformValue("tex3_max", (GLfloat)0.015);
-            m_planetShader->setUniformValue("tex4_min", (GLfloat)0.015);
-            m_planetShader->setUniformValue("tex4_max", (GLfloat)1.0);
-        }
+
+        m_planetShader->setUniformValue("tex1_min", (GLfloat)-.1);
+        m_planetShader->setUniformValue("tex1_max", (GLfloat)-0.015);
+        m_planetShader->setUniformValue("tex2_min", (GLfloat)-0.015);
+        m_planetShader->setUniformValue("tex2_max", (GLfloat)0.0);
+        m_planetShader->setUniformValue("tex3_min", (GLfloat)0.0);
+        m_planetShader->setUniformValue("tex3_max", (GLfloat)0.015);
+        m_planetShader->setUniformValue("tex4_min", (GLfloat)0.015);
+        m_planetShader->setUniformValue("tex4_max", (GLfloat).1);
     } else {
         m_starShader->bind();
 

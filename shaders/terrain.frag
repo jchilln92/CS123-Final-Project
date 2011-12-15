@@ -8,6 +8,8 @@ uniform float tex2_min, tex2_max;
 uniform float tex3_min, tex3_max;
 uniform float tex4_min, tex4_max;
 
+uniform bool has_water;
+
 varying float height;
 varying float intensity;
 
@@ -26,6 +28,15 @@ vec4 sampleTextures() {
     float tex4_rng = tex4_max-tex4_min;
     float tex4_w = max(0.0,(tex4_rng-abs(height-tex4_max))/tex4_rng);
 
+    if (has_water) {
+        if (height <= 0.0) {
+            tex1_w = 1.0;
+            tex2_w = tex3_w = tex4_w = 0.0;
+        } else {
+            tex1_w = 0.0;
+        }
+    }
+
     vec4 sample = tex1_w*texture2D(tex1, gl_TexCoord[0].st * 6.0);
     sample += tex2_w*texture2D(tex2, gl_TexCoord[0].st * 6.0);
     sample += tex3_w*texture2D(tex3, gl_TexCoord[0].st * 6.0);
@@ -33,6 +44,7 @@ vec4 sampleTextures() {
 
     //return vec4(tex1_w,tex2_w,tex3_w,tex4_w);
     return sample;
+
 }
 
 void main() {
