@@ -155,11 +155,6 @@ void GLWidget::createShaderPrograms()
 {
     const QGLContext *ctx = context();
 
-    // old
-    m_shaderPrograms["reflect"] = ResourceLoader::newShaderProgram(ctx, "../CS123-Final-Project/shaders/reflect.vert",
-                                                                   "../CS123-Final-Project/shaders/reflect.frag");
-    m_shaderPrograms["refract"] = ResourceLoader::newShaderProgram(ctx, "../CS123-Final-Project/shaders/refract.vert",
-                                                                   "../CS123-Final-Project/shaders/refract.frag");
     m_shaderPrograms["brightpass"] = ResourceLoader::newFragShaderProgram(ctx, "../CS123-Final-Project/shaders/brightpass.frag");
     m_shaderPrograms["blur"] = ResourceLoader::newFragShaderProgram(ctx, "../CS123-Final-Project/shaders/blur.frag");
     m_shaderPrograms["dof"] = ResourceLoader::newShaderProgram(ctx, "../CS123-Final-Project/shaders/dof.vert",
@@ -306,8 +301,8 @@ void GLWidget::paintGL()
         glBindTexture(GL_TEXTURE_2D, 0);
         m_framebufferObjects["bp_applied"]->release();
 
-        float scales[] = {4.f,8.f,16.f,32.f};
-        for (int i = 0; i < 4; ++i)
+        float scales[] = {4.f,8.f,16.f,32.f,64.f,128.f,256.f};
+        for (int i = 0; i < 7; ++i)
         {
             // Render the blurred brightpass filter result to fbo 1
             renderBlur(width / scales[i], height / scales[i]);

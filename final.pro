@@ -41,10 +41,7 @@ SOURCES += lab/glwidget.cpp \
     gen/SystemGenerator.cpp
 FORMS += mainwindow.ui \
     support/mainwindow.ui
-OTHER_FILES += shaders/refract.vert \
-    shaders/refract.frag \
-    shaders/reflect.vert \
-    shaders/reflect.frag \
+OTHER_FILES += \
     shaders/brightpass.frag \
     shaders/blur.frag \
     shaders/terrain.vert \
