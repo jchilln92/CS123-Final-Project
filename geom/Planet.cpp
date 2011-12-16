@@ -150,6 +150,9 @@ void Planet::render(bool depthPass) {
     m_starShader->setUniformValue("render_depth", depthPass);
     m_planetShader->setUniformValue("render_depth", depthPass);
 
+    m_starShader->setUniformValue("focus_depth", (GLfloat)10.0);
+    m_planetShader->setUniformValue("focus_depth", (GLfloat)10.0);
+
     switch (m_renderDetail) {
     case VERY_LOW:
         m_vl_sphere->render();

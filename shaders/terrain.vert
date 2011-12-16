@@ -4,6 +4,7 @@
 
 uniform float global_amp_scale;
 uniform float global_pos_scale;
+uniform float focus_depth;
 uniform int planet_seed;
 uniform int noise_octaves;
 
@@ -25,49 +26,6 @@ vec3 rotx(vec3 v, float angle) {
 float curve(float x) {
     return x*x*x*(x*(6.0*x-15.0) + 10.0);
 }
-
-/* Value noise implementation
-float randomValue(int x, int y, int z, int seed) {
-    int n = x * 57 + y * 13 + z + seed;
-    n = (n << 13) ^ n;
-    return 1.0 - ( (n * (n * n * 15731 + 789221) + 1376312589) & 0x7fffffff) / 1073741824.0;
-}
-
-float interpolatedValue(vec3 pos, int seed) {
-    vec3 posScaled = global_pos_scale * pos;
-
-    int px = int(posScaled.x);
-    int py = int(posScaled.y);
-    int pz = int(posScaled.z);
-
-    float fx = fract(posScaled.x);
-    float fy = fract(posScaled.y);
-    float fz = fract(posScaled.z);
-
-    float cx = curve(fx);
-    float cy = curve(fy);
-    float cz = curve(fz);
-
-    float v_1 = randomValue(px, py, pz, seed);
-    float v_2 = randomValue(px, py, pz+1, seed);
-    float v_3 = randomValue(px, py+1, pz, seed);
-    float v_4 = randomValue(px, py+1, pz+1, seed);
-    float v_5 = randomValue(px+1, py, pz, seed);
-    float v_6 = randomValue(px+1, py, pz+1, seed);
-    float v_7 = randomValue(px+1, py+1, pz, seed);
-    float v_8 = randomValue(px+1, py+1, pz+1, seed);
-
-    float tv_1 = mix(v_1, v_2, cz);
-    float tv_2 = mix(v_3, v_4, cz);
-    float t_3 = mix(tv_1, tv_2, cy);
-
-    tv_1 = mix(v_5, v_6, cz);
-    tv_2 = mix(v_7, v_8, cz);
-    float t_4 = mix(tv_1, tv_2, cy);
-
-    return mix(t_3, t_4, cx);
-}
-*/
 
 vec3 randomVector(int x, int y, int z, int seed) {
     x = 57 * y + 13 * z + x;
@@ -179,7 +137,7 @@ void main() {
                            gl_ModelViewMatrix * vec4(perturbedVertex, 1)).xyz;
     intensity = max(0.0, dot(normal, light));
 
-    depth = max(1.0-abs(gl_Position.z-10.0)/10.0,0.0);
+    depth = max(1.0-abs(gl_Position.z-focus_depth)/focus_depth,0.0);
     depth *= depth;
 
     gl_TexCoord[0] = gl_MultiTexCoord0;

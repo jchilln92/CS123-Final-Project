@@ -6,7 +6,9 @@ uniform float height;
 
 void main(void) { 
     vec4 color = vec4(0.0, 0.0, 0.0, 1.0);
-    int size = int(5.0 - 5.0*texture2D(depthTex, gl_TexCoord[0].st).r);
+    float depth = texture2D(depthTex, gl_TexCoord[0].st).r;
+    depth = tanh(3*depth);
+    int size = int(5.0 - 5.0*depth);
 
     int arraySize = 2*size+1;
     arraySize *= arraySize;
