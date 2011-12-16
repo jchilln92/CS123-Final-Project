@@ -1,1 +1,27 @@
-sup sup
+PROCEDURAL PLANETS - Joel Nackman, Eric Caruso
+
+In this demo, we generate a procedural solar system. We randomize a number of planets and orbits and set them in motion around a sun (not to scale).
+
+Terrain generation:
+
+We generate terrain by calculating 3D perlin noise in a shader (terrain.vert), and then using the value of the noise at the surface of the planet as a displacement map. We chose to do this because it allowed us to avoid the artifacts that would appear at the sphere caps if we had used noise in only two dimensions. As such, the planets have uniform features that are not distorted by the tesselation method.
+
+Depth of field:
+
+This shader uses depth values that are calculated when rendering the scene to figure out what is in focus. This is definitely not physically legal, but it looks pretty nice, so we kept it. We get the distance from the eye to the point and then blur a variable amount based on that.
+
+Incidentally, this shader was also a pain in the ass.
+
+Bloom:
+
+We jacked your support code, LOLS.
+
+Level of detail:
+
+Because we didn't want our program to be extraordinarily slow, we decided that it would be prudent to render planets with fewer features as we move further away. This allows us to render planets nicely when we are close to them, because that is when we actually care about how smooth the features are.
+
+Acknowledgements:
+
+Dave Kilian - somehow spent several long sessions with us and finished weenix anyway
+Justin Ardini - fixed our pain in the ass bug with DOF
+Andy Scheff - telling us to make sure we had alpha channel enabled, even though it brought down all the machines we used it on 
