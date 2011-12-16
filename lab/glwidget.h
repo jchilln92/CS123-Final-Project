@@ -61,6 +61,10 @@ private:
     Vector2 m_prevMousePos;
     Camera m_camera;
 
+    // feature flags
+    bool m_isBloomEnabled;
+    bool m_isDOFEnabled;
+
     // Resources
     QHash<QString, QGLShaderProgram *> m_shaderPrograms; // hash map of all shader programs
     QHash<QString, QGLFramebufferObject *> m_framebufferObjects; // hash map of all framebuffer objects

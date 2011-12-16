@@ -41,6 +41,8 @@ GLWidget::GLWidget(QWidget *parent) : QGLWidget(parent),
     connect(&m_simTimer, SIGNAL(timeout()), this, SLOT(doSimTick()));
 
     m_scene = new Scene();
+    m_isBloomEnabled = true;
+    m_isDOFEnabled = true;
 }
 
 /**
@@ -284,36 +286,43 @@ void GLWidget::paintGL()
     m_shaderPrograms["dof"]->release();
     m_framebufferObjects["dof_applied"]->release();
 
-    glBindTexture(GL_TEXTURE_2D, m_framebufferObjects["dof_applied"]->texture());
-    renderTexturedQuad(width, height, true);
-    glBindTexture(GL_TEXTURE_2D, 0);
-
-    m_framebufferObjects["bp_applied"]->bind();
-    m_shaderPrograms["brightpass"]->bind();
-    glBindTexture(GL_TEXTURE_2D, m_framebufferObjects["dof_applied"]->texture());
-    renderTexturedQuad(width, height, true);
-    m_shaderPrograms["brightpass"]->release();
-    glBindTexture(GL_TEXTURE_2D, 0);
-    m_framebufferObjects["bp_applied"]->release();
-
-    float scales[] = {4.f,8.f,16.f,32.f};
-    for (int i = 0; i < 4; ++i)
-    {
-        // Render the blurred brightpass filter result to fbo 1
-        renderBlur(width / scales[i], height / scales[i]);
-
-        // Bind the image from fbo to a texture
+    if (m_isDOFEnabled) {
+        glBindTexture(GL_TEXTURE_2D, m_framebufferObjects["dof_applied"]->texture());
+    } else {
         glBindTexture(GL_TEXTURE_2D, m_framebufferObjects["pass1"]->texture());
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    }
 
-        // Enable alpha blending and render the texture to the screen this with your image editor, or programmatically. For the latter approach, you need a gradient function that returns a colour given a number between 0 and 1. This function is then called for every element in you Perlin noise array to obtain a colour, which you can store in a separate array, from which an image can be created.
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_ONE, GL_ONE);
-        glTranslatef(0.f, (scales[i] - 1) * -height, 0.f);
-        renderTexturedQuad(width * scales[i], height * scales[i], false);
-        glDisable(GL_BLEND);
+    renderTexturedQuad(width, height, true);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    if (m_isBloomEnabled) {
+        m_framebufferObjects["bp_applied"]->bind();
+        m_shaderPrograms["brightpass"]->bind();
+        glBindTexture(GL_TEXTURE_2D, m_framebufferObjects["dof_applied"]->texture());
+        renderTexturedQuad(width, height, true);
+        m_shaderPrograms["brightpass"]->release();
         glBindTexture(GL_TEXTURE_2D, 0);
+        m_framebufferObjects["bp_applied"]->release();
+
+        float scales[] = {4.f,8.f,16.f,32.f};
+        for (int i = 0; i < 4; ++i)
+        {
+            // Render the blurred brightpass filter result to fbo 1
+            renderBlur(width / scales[i], height / scales[i]);
+
+            // Bind the image from fbo to a texture
+            glBindTexture(GL_TEXTURE_2D, m_framebufferObjects["pass1"]->texture());
+            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+            // Enable alpha blending and render the texture to the screen this with your image editor, or programmatically. For the latter approach, you need a gradient function that returns a colour given a number between 0 and 1. This function is then called for every element in you Perlin noise array to obtain a colour, which you can store in a separate array, from which an image can be created.
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_ONE, GL_ONE);
+            glTranslatef(0.f, (scales[i] - 1) * -height, 0.f);
+            renderTexturedQuad(width * scales[i], height * scales[i], false);
+            glDisable(GL_BLEND);
+            glBindTexture(GL_TEXTURE_2D, 0);
+        }
     }
 
     paintText();
@@ -497,8 +506,15 @@ void GLWidget::keyPressEvent(QKeyEvent *event)
 {
     SystemGenerator gen;
     QList<Planet> pls;
+
     switch(event->key())
     {
+        case Qt::Key_B:
+            m_isBloomEnabled = !m_isBloomEnabled;
+            break;
+        case Qt::Key_D:
+            m_isDOFEnabled = !m_isDOFEnabled;
+            break;
         case Qt::Key_P:
             if (m_simTimer.isActive()) {
                 m_simTimer.stop();
@@ -542,6 +558,15 @@ void GLWidget::paintText()
     renderText(10, 35, "S: Save screenshot", m_font);
     renderText(10, 50, "P: Toggle animation", m_font);
     renderText(10, 65, "R: Regenerate system", m_font);
+    renderText(10, 90, "Options:", m_font);
+
+    QString bloomString = "B: Toggle Bloom";
+    bloomString += m_isBloomEnabled ? " (On)" : " (Off)";
+    QString dofString = "D: Toggle DOF";
+    dofString += m_isDOFEnabled ? " (On)" : " (Off)";
+
+    renderText(10, 105, bloomString, m_font);
+    renderText(10, 120, dofString, m_font);
 
     glColor3f(1.f, 1.f, 1.f);
 }
