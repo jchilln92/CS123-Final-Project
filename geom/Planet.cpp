@@ -87,7 +87,7 @@ void Planet::setDetail(MeshDetail detail) {
     m_renderDetail = detail;
 }
 
-void Planet::render() {
+void Planet::render(bool depthPass) {
     glPushMatrix();
 
     float rad2deg = 180.0/M_PI;
@@ -130,7 +130,6 @@ void Planet::render() {
         m_planetShader->setUniformValue("has_water",m_hasWater);
 
         // load data about how the textures are to be mapped for the planet shader
-
         m_planetShader->setUniformValue("tex1_min", (GLfloat)-.1);
         m_planetShader->setUniformValue("tex1_max", (GLfloat)-0.015);
         m_planetShader->setUniformValue("tex2_min", (GLfloat)-0.015);
@@ -147,6 +146,9 @@ void Planet::render() {
         glBindTexture(GL_TEXTURE_2D, getTexture(0));
         m_starShader->setUniformValue("sunTex", (GLuint)0);
     }
+
+    m_starShader->setUniformValue("render_depth", depthPass);
+    m_planetShader->setUniformValue("render_depth", depthPass);
 
     switch (m_renderDetail) {
     case VERY_LOW:

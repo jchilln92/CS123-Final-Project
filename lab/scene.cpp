@@ -52,7 +52,7 @@ void Scene::updateBodyDetails(Camera *cam) {
     }
 }
 
-void Scene::render() {
+void Scene::render(bool depthPass) {
     // set up a test light
     glEnable(GL_LIGHT0);
     GLfloat light_pos[] = {0.0, 0.0, 0.0, 1.0};
@@ -60,7 +60,7 @@ void Scene::render() {
 
     for (unsigned int i = 0; i < m_bodies.size(); i++) {
         Planet *body = &m_bodies.at(i);
-        body->render();
+        body->render(depthPass);
     }
 
     glActiveTexture(GL_TEXTURE0); // make renderText work again

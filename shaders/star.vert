@@ -1,4 +1,5 @@
 varying float depth;
+uniform bool render_depth;
 
 void main() {
     gl_Position = ftransform();

@@ -9,6 +9,7 @@ uniform float tex3_min, tex3_max;
 uniform float tex4_min, tex4_max;
 
 uniform bool has_water;
+uniform bool render_depth;
 
 varying float height;
 varying float intensity;
@@ -48,6 +49,10 @@ vec4 sampleTextures() {
 }
 
 void main() {
-    gl_FragColor = vec4((sampleTextures() * intensity).rgb,depth);
+    if (render_depth) {
+        gl_FragColor = vec4(depth, depth, depth, 1.0);
+    } else {
+        gl_FragColor = vec4((sampleTextures() * intensity).rgb, 1.0);
+    }
     // gl_FragColor = vec4(depth,depth,depth,1);
 }

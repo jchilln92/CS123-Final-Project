@@ -158,7 +158,8 @@ void GLWidget::createShaderPrograms()
                                                                    "../CS123-Final-Project/shaders/refract.frag");
     m_shaderPrograms["brightpass"] = ResourceLoader::newFragShaderProgram(ctx, "../CS123-Final-Project/shaders/brightpass.frag");
     m_shaderPrograms["blur"] = ResourceLoader::newFragShaderProgram(ctx, "../CS123-Final-Project/shaders/blur.frag");
-    m_shaderPrograms["dof"] = ResourceLoader::newFragShaderProgram(ctx, "../CS123-Final-Project/shaders/dof.frag");
+    m_shaderPrograms["dof"] = ResourceLoader::newShaderProgram(ctx, "../CS123-Final-Project/shaders/dof.vert",
+                                                                    "../CS123-Final-Project/shaders/dof.frag");
 }
 
 /**
@@ -170,17 +171,19 @@ void GLWidget::createFramebufferObjects(int width, int height)
 {
     // Allocate the main framebuffer object for rendering the scene to
     // This needs a depth attachment
-    m_framebufferObjects["fbo_0"] = new QGLFramebufferObject(width, height, QGLFramebufferObject::Depth,
+    m_framebufferObjects["no_bind"] = new QGLFramebufferObject(width, height, QGLFramebufferObject::Depth,
                                                              GL_TEXTURE_2D, GL_RGB16F_ARB);
-    m_framebufferObjects["fbo_0"]->format().setSamples(16);
+    m_framebufferObjects["no_bind"]->format().setSamples(16);
     // Allocate the secondary framebuffer obejcts for rendering textures to (post process effects)
     // These do not require depth attachments
-    m_framebufferObjects["fbo_1"] = new QGLFramebufferObject(width, height, QGLFramebufferObject::NoAttachment,
+    m_framebufferObjects["pass1"] = new QGLFramebufferObject(width, height, QGLFramebufferObject::NoAttachment,
+                                                             GL_TEXTURE_2D, GL_RGB16F_ARB);
+    m_framebufferObjects["pass1_2"] = new QGLFramebufferObject(width, height, QGLFramebufferObject::Depth,
                                                              GL_TEXTURE_2D, GL_RGB16F_ARB);
     // TODO: Create another framebuffer here.  Look up two lines to see how to do this... =.=
-    m_framebufferObjects["fbo_2"] = new QGLFramebufferObject(width, height, QGLFramebufferObject::NoAttachment,
+    m_framebufferObjects["dof_applied"] = new QGLFramebufferObject(width, height, QGLFramebufferObject::NoAttachment,
                                                              GL_TEXTURE_2D, GL_RGB16F_ARB);
-    m_framebufferObjects["fbo_3"] = new QGLFramebufferObject(width, height, QGLFramebufferObject::NoAttachment,
+    m_framebufferObjects["bp_applied"] = new QGLFramebufferObject(width, height, QGLFramebufferObject::NoAttachment,
                                                              GL_TEXTURE_2D, GL_RGB16F_ARB);
 }
 
@@ -239,52 +242,53 @@ void GLWidget::paintGL()
     //renderScene();
     //paintText();
 
-
-
     //---------------------------------
     // Old Framebuffer code, might be useful later
 
     // Render the scene to a framebuffer
-    //glEnable(GL_BLEND);
-    // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    //glBlendFunc(GL_ONE, GL_ONE);
-    m_framebufferObjects["fbo_0"]->bind();
+    m_framebufferObjects["no_bind"]->bind();
     applyPerspectiveCamera(width, height);
-    renderScene();
-    m_framebufferObjects["fbo_0"]->release();
-    //glDisable(GL_BLEND);
+    renderScene(false);
+    m_framebufferObjects["no_bind"]->release();
+
+    m_framebufferObjects["pass1_2"]->bind();
+    applyPerspectiveCamera(width, height);
+    renderScene(true);
+    m_framebufferObjects["pass1_2"]->release();
 
     // Copy the rendered scene into framebuffer 1
-
-    m_framebufferObjects["fbo_0"]->blitFramebuffer(m_framebufferObjects["fbo_1"],
-                                                   QRect(0, 0, width, height), m_framebufferObjects["fbo_0"],
+    m_framebufferObjects["no_bind"]->blitFramebuffer(m_framebufferObjects["pass1"],
+                                                   QRect(0, 0, width, height), m_framebufferObjects["no_bind"],
                                                    QRect(0, 0, width, height), GL_COLOR_BUFFER_BIT, GL_NEAREST);
 
     glDisable(GL_LIGHTING);
+
     applyOrthogonalCamera(width, height);
-    glBindTexture(GL_TEXTURE_2D, m_framebufferObjects["fbo_0"]->texture());
-    renderTexturedQuad(width, height, true);
-    glBindTexture(GL_TEXTURE_2D, 0);
-
-    //glEnable(GL_BLEND);
-
-    /*m_framebufferObjects["fbo_1"]->bind();
+    m_framebufferObjects["dof_applied"]->bind();
     glClearColor(0.0,0.0,0.0,0.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     m_shaderPrograms["dof"]->bind();
-    m_shaderPrograms["dof"]->setUniformValue("width",width);
-    m_shaderPrograms["dof"]->setUniformValue("height",height);
-    glBindTexture(GL_TEXTURE_2D, m_framebufferObjects["fbo_0"]->texture());
+    m_shaderPrograms["dof"]->setUniformValue("width", (GLfloat)width);
+    m_shaderPrograms["dof"]->setUniformValue("height", (GLfloat)height);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, m_framebufferObjects["pass1"]->texture());
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, m_framebufferObjects["pass1_2"]->texture());
+    m_shaderPrograms["dof"]->setUniformValue("tex", 0);
+    m_shaderPrograms["dof"]->setUniformValue("depthTex", 1);
     renderTexturedQuad(width, height, true);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, 0);
     m_shaderPrograms["dof"]->release();
-    m_framebufferObjects["fbo_1"]->release();
-    glDisable(GL_BLEND);*/
+    m_framebufferObjects["dof_applied"]->release();
 
-    //glBindTexture(GL_TEXTURE_2D, m_framebufferObjects["fbo_1"]->texture());
-    //renderTexturedQuad(width, height, true);
-    //glBindTexture(GL_TEXTURE_2D, 0);
+    glBindTexture(GL_TEXTURE_2D, m_framebufferObjects["dof_applied"]->texture());
+    renderTexturedQuad(width, height, true);
+    glBindTexture(GL_TEXTURE_2D, 0);
 
+    /*
     m_framebufferObjects["fbo_2"]->bind();
     m_shaderPrograms["brightpass"]->bind();
     glBindTexture(GL_TEXTURE_2D, m_framebufferObjects["fbo_1"]->texture());
@@ -320,7 +324,7 @@ void GLWidget::paintGL()
     //glBindTexture(GL_TEXTURE_2D, m_framebufferObjects["fbo_3"]->texture());
     //renderTexturedQuad(width, height, true);
     //glBindTexture(GL_TEXTURE_2D, 0);
-
+*/
     /*
     m_framebufferObjects["fbo_1"]->bind();
     m_shaderPrograms["dof"]->bind();
@@ -332,14 +336,14 @@ void GLWidget::paintGL()
     */
 
 
-    paintText();
+    //paintText();
     glEnable(GL_LIGHTING);
 }
 
 /**
   Renders the scene.  May be called multiple times by paintGL() if necessary.
 **/
-void GLWidget::renderScene() {
+void GLWidget::renderScene(bool depthPass) {
     // Enable depth testing
     glEnable(GL_DEPTH_TEST);
     glClear(GL_DEPTH_BUFFER_BIT);
@@ -358,7 +362,7 @@ void GLWidget::renderScene() {
     glPolygonMode(GL_FRONT, GL_FILL);
 
     // draw the scene
-    m_scene->render();
+    m_scene->render(depthPass);
 
     // Disable culling, depth testing and cube maps
     glDisable(GL_CULL_FACE);

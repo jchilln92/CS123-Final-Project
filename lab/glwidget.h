@@ -48,7 +48,7 @@ protected:
     void applyPerspectiveCamera(float width, float height);
     void renderTexturedQuad(int width, int height, bool flip);
     void renderBlur(int width, int height);
-    void renderScene();
+    void renderScene(bool depthPass);
     void paintText();
 
 private:

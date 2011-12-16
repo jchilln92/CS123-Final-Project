@@ -8,6 +8,7 @@ uniform int planet_seed;
 uniform int noise_octaves;
 
 uniform bool has_water;
+uniform bool render_depth;
 
 varying float intensity;
 varying float height;
