@@ -288,14 +288,13 @@ void GLWidget::paintGL()
     renderTexturedQuad(width, height, true);
     glBindTexture(GL_TEXTURE_2D, 0);
 
-    /*
-    m_framebufferObjects["fbo_2"]->bind();
+    m_framebufferObjects["bp_applied"]->bind();
     m_shaderPrograms["brightpass"]->bind();
-    glBindTexture(GL_TEXTURE_2D, m_framebufferObjects["fbo_1"]->texture());
+    glBindTexture(GL_TEXTURE_2D, m_framebufferObjects["dof_applied"]->texture());
     renderTexturedQuad(width, height, true);
     m_shaderPrograms["brightpass"]->release();
     glBindTexture(GL_TEXTURE_2D, 0);
-    m_framebufferObjects["fbo_2"]->release();
+    m_framebufferObjects["bp_applied"]->release();
 
     float scales[] = {4.f,8.f,16.f,32.f};
     for (int i = 0; i < 4; ++i)
@@ -303,12 +302,8 @@ void GLWidget::paintGL()
         // Render the blurred brightpass filter result to fbo 1
         renderBlur(width / scales[i], height / scales[i]);
 
-        // glBindTexture(GL_TEXTURE_2D, m_framebufferObjects["fbo_1"]->texture());
-        // renderTexturedQuad(width, height, false);
-        // glBindTexture(GL_TEXTURE_2D, 0);
-
         // Bind the image from fbo to a texture
-        glBindTexture(GL_TEXTURE_2D, m_framebufferObjects["fbo_1"]->texture());
+        glBindTexture(GL_TEXTURE_2D, m_framebufferObjects["pass1"]->texture());
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
@@ -321,22 +316,7 @@ void GLWidget::paintGL()
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 
-    //glBindTexture(GL_TEXTURE_2D, m_framebufferObjects["fbo_3"]->texture());
-    //renderTexturedQuad(width, height, true);
-    //glBindTexture(GL_TEXTURE_2D, 0);
-*/
-    /*
-    m_framebufferObjects["fbo_1"]->bind();
-    m_shaderPrograms["dof"]->bind();
-    glBindTexture(GL_TEXTURE_2D, m_framebufferObjects["fbo_2"]->texture());
-    renderTexturedQuad(width, height, true);
-    m_shaderPrograms["dof"]->release();
-    glBindTexture(GL_TEXTURE_2D, 0);
-    m_framebufferObjects["fbo_1"]->release();
-    */
-
-
-    //paintText();
+    paintText();
     glEnable(GL_LIGHTING);
 }
 
@@ -386,16 +366,16 @@ void GLWidget::renderBlur(int width, int height)
     GLfloat offsets[dim * dim * 2];
     createBlurKernel(radius, width, height, &kernel[0], &offsets[0]);
 
-    m_framebufferObjects["fbo_1"]->bind();
+    m_framebufferObjects["pass1"]->bind();
     m_shaderPrograms["blur"]->bind();
     m_shaderPrograms["blur"]->setUniformValue("arraySize", dim * dim);
     m_shaderPrograms["blur"]->setUniformValueArray("offsets", offsets, dim * dim, 2);
     m_shaderPrograms["blur"]->setUniformValueArray("kernel", kernel, dim * dim * 2, 1);
-    glBindTexture(GL_TEXTURE_2D, m_framebufferObjects["fbo_2"]->texture());
+    glBindTexture(GL_TEXTURE_2D, m_framebufferObjects["bp_applied"]->texture());
     renderTexturedQuad(width, height, false);
     m_shaderPrograms["blur"]->release();
     glBindTexture(GL_TEXTURE_2D, 0);
-    m_framebufferObjects["fbo_1"]->release();
+    m_framebufferObjects["pass1"]->release();
 }
 
 /**
