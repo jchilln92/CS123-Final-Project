@@ -15,7 +15,7 @@ public:
     std::vector<Planet>& getBodies();
 
     void updateBodyDetails(Camera *cam);
-    void render(bool depthPass);
+    void render(bool depthPass, float depthFocus);
     void doTicks(int numTicks);
 
     void clear();

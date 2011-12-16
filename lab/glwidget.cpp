@@ -86,6 +86,8 @@ void GLWidget::initializeGL()
     // Start the simulation timer
     m_simTimer.start(1.0f); // 1 tick = ~1ms
     m_prevSimTime = m_clock.elapsed();
+
+    m_dof = 25.0f;
 }
 
 void GLWidget::doSimTick() {
@@ -342,7 +344,7 @@ void GLWidget::renderScene(bool depthPass) {
     glPolygonMode(GL_FRONT, GL_FILL);
 
     // draw the scene
-    m_scene->render(depthPass);
+    m_scene->render(depthPass, m_dof);
 
     // Disable culling, depth testing and cube maps
     glDisable(GL_CULL_FACE);
@@ -514,6 +516,12 @@ void GLWidget::keyPressEvent(QKeyEvent *event)
                 m_scene->addBody(pls[i]);
             }
             break;
+        case Qt::Key_J:
+            m_dof *= 0.98;
+            break;
+        case Qt::Key_K:
+            m_dof *= 1.02;
+            break;
         case Qt::Key_S:
             QImage qi = grabFrameBuffer(false);
             QString filter;
@@ -542,6 +550,10 @@ void GLWidget::paintText()
     renderText(10, 35, "S: Save screenshot", m_font);
     renderText(10, 50, "P: Toggle animation", m_font);
     renderText(10, 65, "R: Regenerate system", m_font);
+
+    renderText(10, 145, "Current focus depth: " + QString::number(m_dof), m_font);
+    renderText(10, 160, "J: Lower focus depth", m_font);
+    renderText(10, 175, "K: Raise focus depth", m_font);
 
     glColor3f(1.f, 1.f, 1.f);
 }

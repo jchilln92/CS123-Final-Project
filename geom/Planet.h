@@ -19,7 +19,7 @@ public:
 
     void setDetail(MeshDetail detail);
     MeshDetail getDetail() { return m_renderDetail; }
-    void render(bool depthPass);
+    void render(bool depthPass, float depthFocus);
 
     void setTexture(const char *filename, int i);
     GLuint getTexture(int i);

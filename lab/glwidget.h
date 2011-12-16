@@ -57,6 +57,7 @@ private:
     QTime m_clock;
     int m_prevSimTime;
     int m_prevTime;
+    float m_dof;
     float m_prevFps, m_fps;
     Vector2 m_prevMousePos;
     Camera m_camera;

@@ -87,7 +87,7 @@ void Planet::setDetail(MeshDetail detail) {
     m_renderDetail = detail;
 }
 
-void Planet::render(bool depthPass) {
+void Planet::render(bool depthPass, float depthFocus) {
     glPushMatrix();
 
     float rad2deg = 180.0/M_PI;
@@ -150,8 +150,8 @@ void Planet::render(bool depthPass) {
     m_starShader->setUniformValue("render_depth", depthPass);
     m_planetShader->setUniformValue("render_depth", depthPass);
 
-    m_starShader->setUniformValue("focus_depth", (GLfloat)10.0);
-    m_planetShader->setUniformValue("focus_depth", (GLfloat)10.0);
+    m_starShader->setUniformValue("focus_depth", (GLfloat)depthFocus);
+    m_planetShader->setUniformValue("focus_depth", (GLfloat)depthFocus);
 
     switch (m_renderDetail) {
     case VERY_LOW:
